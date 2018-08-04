@@ -92,6 +92,35 @@ class Config
         );
     }
 
+    public function getStoreUsername($store)
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getCode()
+        );
+    }
+
+    public function getDefaultUsername()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            'default'
+        );
+    }
+
+    public function getUsernameNotNull($store = null)
+    {
+        $username = $this->getUsername();
+        if ($username == null) {
+            $username = $this->getStoreUsername($store);
+            if ($username == null) {
+                $username = $this->getDefaultUsername();
+            }
+        }
+        return $username;
+    }
+
     public function getCustomerType()
     {
         return $this->scopeConfig->getValue(
@@ -125,12 +154,70 @@ class Config
         );
     }
 
+    public function getStorePassword($store)
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getCode()
+        );
+    }
+
+    public function getDefaultPassword()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            'default'
+        );
+    }
+
+    public function getPasswordNotNull($store = null)
+    {
+        $password = $this->getPassword();
+        if ($password == null) {
+            $password = $this->getStorePassword($store);
+            if ($password == null) {
+                $password = $this->getDefaultPassword();
+            }
+        }
+        return $password;
+    }
+
     public function getB2CStoreID()
     {
         return $this->scopeConfig->getValue(
             'collector_collectorcheckout/general/b2c_storeid',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+    }
+
+    public function getStoreB2CStoreID($store)
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getCode()
+        );
+    }
+
+    public function getDefaultB2CStoreID()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            'default'
+        );
+    }
+
+    public function getB2CStoreIDNotNull($store = null)
+    {
+        $storeID = $this->getB2CStoreID();
+        if ($storeID == null) {
+            $storeID = $this->getStoreB2CStoreID($store);
+            if ($storeID == null) {
+                $storeID = $this->getDefaultB2CStoreID();
+            }
+        }
+        return $storeID;
     }
 
     public function getB2BStoreID()
@@ -141,24 +228,41 @@ class Config
         );
     }
 
+    public function getStoreB2BStoreID($store)
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store->getCode()
+        );
+    }
+
+    public function getDefaultB2BStoreID()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/b2b_storeid',
+            'default'
+        );
+    }
+
+    public function getB2BStoreIDNotNull($store = null)
+    {
+        $storeID = $this->getB2BStoreID();
+        if ($storeID == null) {
+            $storeID = $this->getStoreB2BStoreID($store);
+            if ($storeID == null) {
+                $storeID = $this->getDefaultB2BStoreID();
+            }
+        }
+        return $storeID;
+    }
+
     public function getCountryCode()
     {
         return $this->scopeConfig->getValue(
             'general/country/default',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
-    }
-
-    public function getCountryCodeNotNull($store = null)
-    {
-        $countryCode = $this->getCountryCode();
-        if ($countryCode == null) {
-            $countryCode = $this->getStoreCountryCode($store);
-            if ($countryCode == null) {
-                $countryCode = $this->getDefaultCountryCode();
-            }
-        }
-        return $countryCode;
     }
 
     public function getStoreCountryCode($store)
@@ -176,6 +280,18 @@ class Config
             'general/country/default',
             'default'
         );
+    }
+
+    public function getCountryCodeNotNull($store = null)
+    {
+        $countryCode = $this->getCountryCode();
+        if ($countryCode == null) {
+            $countryCode = $this->getStoreCountryCode($store);
+            if ($countryCode == null) {
+                $countryCode = $this->getDefaultCountryCode();
+            }
+        }
+        return $countryCode;
     }
 
     public function getTermsUrl()
@@ -257,10 +373,10 @@ class Config
             \Collector\Iframe\Model\Config\Source\Customertype::BUSINESS_CUSTOMER
         ) {
             $this->collectorSession->setBtype(\Collector\Base\Model\Session::B2B);
-            return intval($this->getB2BStoreID());
+            return intval($this->getB2BStoreIDNotNull());
         }
         $this->collectorSession->setBtype(\Collector\Base\Model\Session::B2C);
-        return intval($this->getB2CStoreID());
+        return intval($this->getB2CStoreIDNotNull());
     }
 
 

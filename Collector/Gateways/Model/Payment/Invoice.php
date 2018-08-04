@@ -129,9 +129,9 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$isIframe) {
             $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
             if ($order->getBillingAddress()->getCompany()) {
-                $storeID = $this->collectorConfig->getB2BStoreID();
+                $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
             } else {
-                $storeID = $this->collectorConfig->getB2CStoreID();
+                $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
             }
 
             $req = array(
@@ -179,9 +179,9 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
 
         if ($order->getBillingAddress()->getCompany()) {
-            $storeID = $this->collectorConfig->getB2BStoreID();
+            $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
         } else {
-            $storeID = $this->collectorConfig->getB2CStoreID();
+            $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
         if ($order->getGrandTotal() - $order->getTotalInvoiced() == $amount) {
             $req = array(
@@ -289,9 +289,9 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $order = $payment->getOrder();
         if ($order->getBillingAddress()->getCompany()) {
-            $storeID = $this->collectorConfig->getB2BStoreID();
+            $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
         } else {
-            $storeID = $this->collectorConfig->getB2CStoreID();
+            $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
         $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
 
@@ -317,9 +317,9 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $order = $payment->getOrder();
         if ($order->getBillingAddress()->getCompany()) {
-            $storeID = $this->collectorConfig->getB2BStoreID();
+            $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
         } else {
-            $storeID = $this->collectorConfig->getB2CStoreID();
+            $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
         $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
 
@@ -345,9 +345,9 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $order = $payment->getOrder();
         if ($order->getBillingAddress()->getCompany()) {
-            $storeID = $this->collectorConfig->getB2BStoreID();
+            $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
         } else {
-            $storeID = $this->collectorConfig->getB2CStoreID();
+            $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
 
         $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);

@@ -112,9 +112,9 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
     private function getB2BrB2CStoreId(&$order)
     {
         if ($order->getBillingAddress()->getCompany()) {
-            return $this->collectorConfig->getB2BStoreID();
+            return $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
         }
-        return $this->collectorConfig->getB2CStoreID();
+        return $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
     }
 
     public function canRefund()

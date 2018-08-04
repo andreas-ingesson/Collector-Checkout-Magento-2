@@ -56,8 +56,8 @@ class ApiRequest
             'exceptions' => 1,
             'trace' => true
         ]);
-        $header['Username'] = $this->collectorConfig->getUsername();
-        $header['Password'] = $this->collectorConfig->getPassword();
+        $header['Username'] = $this->collectorConfig->getUsernameNotNull();
+        $header['Password'] = $this->collectorConfig->getPasswordNotNull();
         $headerList = array();
         foreach ($header as $k => $v) {
             $headerList[] = new \SoapHeader($this->collectorConfig->getHeaderUrl(), $k, $v);
