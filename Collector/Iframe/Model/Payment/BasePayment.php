@@ -178,7 +178,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
                 'StoreId' => $storeID
             );
 
-            $client = $this->apiRequest->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
+            $client = $this->apiRequest->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
             try {
                 $resp = $client->AddInvoice($req);
                 if ($resp->InvoiceStatus < 5) {
@@ -199,7 +199,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $order = $payment->getOrder();
-        $client = $this->apiRequest->getInvoiceSOAP();
+        $client = $this->apiRequest->getInvoiceSOAP(null, $order);
         $storeID = $this->getB2BrB2CStoreId($order);
 
         if ($order->getGrandTotal() - $order->getTotalInvoiced() == $amount) {
@@ -306,7 +306,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $order = $payment->getOrder();
         $storeID = $this->getB2BrB2CStoreId($order);
-        $client = $this->apiRequest->getInvoiceSOAP();
+        $client = $this->apiRequest->getInvoiceSOAP(null, $order);
 
         $req = array(
             'CorrelationId' => $order->getIncrementId(),
@@ -326,7 +326,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $order = $payment->getOrder();
         $storeID = $this->getB2BrB2CStoreId($order);
-        $client = $this->apiRequest->getInvoiceSOAP();
+        $client = $this->apiRequest->getInvoiceSOAP(null, $order);
 
         $req = array(
             'CorrelationId' => $order->getIncrementId(),
@@ -346,7 +346,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $order = $payment->getOrder();
         $storeID = $this->getB2BrB2CStoreId($order);
-        $client = $this->apiRequest->getInvoiceSOAP();
+        $client = $this->apiRequest->getInvoiceSOAP(null, $order);
 
         if ($order->getGrandTotal() == $amount) {
             $req = array(

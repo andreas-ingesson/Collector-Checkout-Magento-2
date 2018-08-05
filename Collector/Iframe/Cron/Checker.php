@@ -80,7 +80,7 @@ class Checker
                     } else {
                         $storeID = $this->collectorConfig->getB2CStoreID();
                     }
-                    $soap = $this->apiRequest->getInvoiceSOAP(['ClientIpAddress' => $actual_quote->getRemoteIp()]);
+                    $soap = $this->apiRequest->getInvoiceSOAP(['ClientIpAddress' => $actual_quote->getRemoteIp()], $order);
                     $req = array(
                         'CorrelationId' => $data['data']['reference'],
                         'CountryCode' => $this->collectorConfig->getCountryCode(),

@@ -95,7 +95,7 @@ class Config
     public function getStoreUsername($store)
     {
         return $this->scopeConfig->getValue(
-            'collector_collectorcheckout/general/b2b_storeid',
+            'collector_collectorcheckout/general/username',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getCode()
         );
@@ -104,7 +104,7 @@ class Config
     public function getDefaultUsername()
     {
         return $this->scopeConfig->getValue(
-            'collector_collectorcheckout/general/b2b_storeid',
+            'collector_collectorcheckout/general/username',
             'default'
         );
     }
@@ -157,7 +157,7 @@ class Config
     public function getStorePassword($store)
     {
         return $this->scopeConfig->getValue(
-            'collector_collectorcheckout/general/b2b_storeid',
+            'collector_collectorcheckout/general/sharedkey',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getCode()
         );
@@ -166,7 +166,7 @@ class Config
     public function getDefaultPassword()
     {
         return $this->scopeConfig->getValue(
-            'collector_collectorcheckout/general/b2b_storeid',
+            'collector_collectorcheckout/general/sharedkey',
             'default'
         );
     }
@@ -194,7 +194,7 @@ class Config
     public function getStoreB2CStoreID($store)
     {
         return $this->scopeConfig->getValue(
-            'collector_collectorcheckout/general/b2b_storeid',
+            'collector_collectorcheckout/general/b2c_storeid',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getCode()
         );
@@ -203,7 +203,7 @@ class Config
     public function getDefaultB2CStoreID()
     {
         return $this->scopeConfig->getValue(
-            'collector_collectorcheckout/general/b2b_storeid',
+            'collector_collectorcheckout/general/b2c_storeid',
             'default'
         );
     }

@@ -127,7 +127,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
 
 
         if (!$isIframe) {
-            $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
+            $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
             if ($order->getBillingAddress()->getCompany()) {
                 $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
             } else {
@@ -176,7 +176,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $order = $payment->getOrder();
-        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
+        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
 
         if ($order->getBillingAddress()->getCompany()) {
             $storeID = $this->collectorConfig->getB2BStoreIDNotNull($order->getStore());
@@ -293,7 +293,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         } else {
             $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
-        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
+        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
 
         $req = array(
             'CorrelationId' => $order->getIncrementId(),
@@ -321,7 +321,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         } else {
             $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
-        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
+        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
 
         $req = array(
             'CorrelationId' => $order->getIncrementId(),
@@ -350,7 +350,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
             $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
 
-        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()]);
+        $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
         if ($order->getGrandTotal() == $amount) {
             $req = array(
                 'CorrelationId' => $order->getIncrementId(),

@@ -49,15 +49,15 @@ class ApiRequest
         $this->collectorConfig = $collectorConfig;
     }
 
-    public function getInvoiceSOAP($header = [])
+    public function getInvoiceSOAP($header = [], $order)
     {
         $soapClient = $this->soapClientFactory->create($this->collectorConfig->getInvoiceWSDL(), [
             'soap_version' => SOAP_1_1,
             'exceptions' => 1,
             'trace' => true
         ]);
-        $header['Username'] = $this->collectorConfig->getUsernameNotNull();
-        $header['Password'] = $this->collectorConfig->getPasswordNotNull();
+        $header['Username'] = $this->collectorConfig->getUsernameNotNull($order->getStore());
+        $header['Password'] = $this->collectorConfig->getPasswordNotNull($order->getStore());
         $headerList = array();
         foreach ($header as $k => $v) {
             $headerList[] = new \SoapHeader($this->collectorConfig->getHeaderUrl(), $k, $v);

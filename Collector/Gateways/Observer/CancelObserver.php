@@ -63,7 +63,7 @@ class CancelObserver extends AbstractDataAssignObserver
         $payment = $order->getPayment();
         $method = $payment->getMethodInstance();
         if (strpos($method->getCode(), "collector") !== false) {
-            $client = $this->apiRequest->getInvoiceSOAP();
+            $client = $this->apiRequest->getInvoiceSOAP(null, $order);
             if ($this->collectorConfig->getEnable()) {
                 if ($order->getData('collector_ssn') !== null) {
                     $storeId = $this->collectorConfig->getB2BStoreID();
