@@ -95,6 +95,10 @@ class Cajax extends \Magento\Framework\App\Action\Action
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
+    /**
+     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     */
+    protected $productRepository;
 
     /**
      * Cajax constructor.
@@ -116,6 +120,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
      * @param \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface
      * @param \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource
      * @param \Magento\Store\Model\StoreManagerInterface $_storeManager
+	 * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      */
     public function __construct(
         \Magento\Framework\View\Result\LayoutFactory $_layoutFactory,
@@ -135,9 +140,11 @@ class Cajax extends \Magento\Framework\App\Action\Action
         \Magento\CatalogInventory\Model\StockStateProvider $_stockStateProvider,
         \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface,
         \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource,
-        \Magento\Store\Model\StoreManagerInterface $_storeManager
+        \Magento\Store\Model\StoreManagerInterface $_storeManager,
+		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository
     ) {
         parent::__construct($context);
+		$this->productRepository = $productRepository;
         $this->apiRequest = $apiRequest;
         $this->logger = $logger;
         $this->collectionSession = $_collectorSession;
@@ -250,7 +257,8 @@ class Cajax extends \Magento\Framework\App\Action\Action
                     $id = explode('_', $this->getRequest()->getParam('id'))[1];
                     foreach ($allItems as $item) {
                         if ($item->getId() == $id) {
-                            if ($this->stockState->getStockQty($item->getProduct()->getId(), $item->getProduct()->getStore()->getWebsiteId()) - $item->getQty() >= 0) {
+							$product = $this->productRepository->get($item->getSku());
+                            if ($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) {
                                 $item->setQty($item->getQty() + 1);
                                 $changed = true;
                                 $updateCart = true;
