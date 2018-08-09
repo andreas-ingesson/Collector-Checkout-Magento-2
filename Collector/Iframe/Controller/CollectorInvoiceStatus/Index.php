@@ -204,16 +204,16 @@ class Index extends \Magento\Framework\App\Action\Action
                 $order = $this->orderInterface->loadByIncrementId($this->request->getParam('OrderNo'));
                 if ($order->getId()) {
                     if ($this->request->getParam('InvoiceStatus') == "0") {
-                        $status = $this->helper->getHoldStatus();
+                        $status = $this->config->getHoldStatus();
                         $order->setState($status)->setStatus($status);
                         $order->save();
                     } else {
                         if ($this->request->getParam('InvoiceStatus') == "1") {
-                            $status = $this->helper->getAcceptStatus();
+                            $status = $this->config->getAcceptStatus();
                             $order->setState($status)->setStatus($status);
                             $order->save();
                         } else {
-                            $status = $this->helper->getDeniedStatus();
+                            $status = $this->config->getDeniedStatus();
                             $order->setState($status)->setStatus($status);
                             $order->save();
                         }
