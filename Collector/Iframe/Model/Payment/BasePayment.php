@@ -272,7 +272,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
                             'Quantity' => 1
                         ));
                     }
-                    if ($order->getData('fee_amount_invoiced') == 0) {
+                    if ($order->getData('fee_amount_invoiced') == 0  && $order->getData('fee_amount') > 0) {
                         array_push($req['ArticleList'], array(
                             'ArticleId' => "invoice_fee",
                             'Description' => 'Invoice Fee',

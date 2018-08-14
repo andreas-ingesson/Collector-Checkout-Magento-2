@@ -373,10 +373,10 @@ class Config
             \Collector\Iframe\Model\Config\Source\Customertype::BUSINESS_CUSTOMER
         ) {
             $this->collectorSession->setBtype(\Collector\Base\Model\Session::B2B);
-            return intval($this->getB2BStoreIDNotNull());
+            return intval($this->getB2BStoreID());
         }
         $this->collectorSession->setBtype(\Collector\Base\Model\Session::B2C);
-        return intval($this->getB2CStoreIDNotNull());
+        return intval($this->getB2CStoreID());
     }
 
 
