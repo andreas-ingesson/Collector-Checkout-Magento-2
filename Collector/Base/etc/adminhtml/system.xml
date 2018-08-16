@@ -53,10 +53,17 @@
 					<source_model>Collector\Iframe\Model\Config\Source\DeniedStatus</source_model>
 				</field>
 				<field id="updatecustomer" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Update Magento Session Customer</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<comment>
+						if selected this will update billing and shipping addresses in magento session when they are set in the iframe
+					</comment>
+				</field>
+                <field id="updatedbcustomer" translate="label comment" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Update Magento Customer</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 					<comment>
-						if selected this will update billing and shipping addresses in magento when they are set in the iframe
+						if selected this will create billing and shipping addresses for a magento customer during order creation
 					</comment>
 				</field>
 

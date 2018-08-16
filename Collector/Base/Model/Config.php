@@ -35,6 +35,14 @@ class Config
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
+    
+    public function getUpdateDbCustomer()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/updatedbcustomer',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
 
     public function getAcceptStatus()
     {

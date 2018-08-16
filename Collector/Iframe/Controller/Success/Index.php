@@ -366,17 +366,8 @@ class Index extends \Magento\Framework\App\Action\Action
             }
             //load customer by email address
             $customer->loadByEmail($email);
-            //check the customer
-            if (!$customer->getEntityId() && $createAccount) {
-                //If not avilable then create this customer
-                $customer->setWebsiteId($websiteId)
-                    ->setStore($store)
-                    ->setFirstname($firstname)
-                    ->setLastname($lastname)
-                    ->setEmail($email)
-                    ->setPassword($email);
-                $customer->save();
-
+            
+            if ($this->collectorConfig->getUpdateDbCustomer() && $customer->getEntityId() !== false){
                 if (isset($shippingAddressArr)) {
                     $cShippingAddress = $this->addressFactory->create();
                     $cShippingAddress->setCustomerId($customer->getId());
@@ -393,8 +384,8 @@ class Index extends \Magento\Framework\App\Action\Action
                     $cShippingAddress->setIsDefaultShipping('1');
                     $cShippingAddress->setSaveInAddressBook('1');
                     $cShippingAddress->save();
-					$customer->setDefaultShipping($cShippingAddress->getId());
-					$customer->save();
+                    $customer->setDefaultShipping($cShippingAddress->getId());
+                    $customer->save();
                 }
                 $cBillingAddress = $this->addressFactory->create();
                 $cBillingAddress->setCustomerId($customer->getId());
@@ -411,8 +402,60 @@ class Index extends \Magento\Framework\App\Action\Action
                 $cBillingAddress->setIsDefaultBilling('1');
                 $cBillingAddress->setSaveInAddressBook('1');
                 $cBillingAddress->save();
-				$customer->setDefaultBilling($cBillingAddress->getId());
-				$customer->save();
+                $customer->setDefaultBilling($cBillingAddress->getId());
+                $customer->save();
+            }
+            
+            
+            //check the customer
+            if (!$customer->getEntityId() && $createAccount) {
+                //If not avilable then create this customer
+                $customer->setWebsiteId($websiteId)
+                    ->setStore($store)
+                    ->setFirstname($firstname)
+                    ->setLastname($lastname)
+                    ->setEmail($email)
+                    ->setPassword($email);
+                $customer->save();
+                
+                if ($this->collectorConfig->getUpdateDbCustomer()){
+                    if (isset($shippingAddressArr)) {
+                        $cShippingAddress = $this->addressFactory->create();
+                        $cShippingAddress->setCustomerId($customer->getId());
+                        $cShippingAddress->setFirstname($firstname);
+                        $cShippingAddress->setLastname($lastname);
+                        $cShippingAddress->setCountryId($response['data']['countryCode']);
+                        $cShippingAddress->setPostcode($shippingAddressArr['postcode']);
+                        $cShippingAddress->setCity($shippingAddressArr['city']);
+                        $cShippingAddress->setTelephone($shippingAddressArr['telephone']);
+                        if ($shippingAddressArr['company'] != '') {
+                            $cShippingAddress->setCompany($shippingAddressArr['company']);
+                        }
+                        $cShippingAddress->setStreet($shippingAddressArr['street']);
+                        $cShippingAddress->setIsDefaultShipping('1');
+                        $cShippingAddress->setSaveInAddressBook('1');
+                        $cShippingAddress->save();
+                        $customer->setDefaultShipping($cShippingAddress->getId());
+                        $customer->save();
+                    }
+                    $cBillingAddress = $this->addressFactory->create();
+                    $cBillingAddress->setCustomerId($customer->getId());
+                    $cBillingAddress->setFirstname($firstname);
+                    $cBillingAddress->setLastname($lastname);
+                    $cBillingAddress->setCountryId($response['data']['countryCode']);
+                    $cBillingAddress->setPostcode($billingAddress['postcode']);
+                    $cBillingAddress->setCity($billingAddress['city']);
+                    $cBillingAddress->setTelephone($billingAddress['telephone']);
+                    if ($billingAddress['company'] != '') {
+                        $cBillingAddress->setCompany($billingAddress['company']);
+                    }
+                    $cBillingAddress->setStreet($billingAddress['street']);
+                    $cBillingAddress->setIsDefaultBilling('1');
+                    $cBillingAddress->setSaveInAddressBook('1');
+                    $cBillingAddress->save();
+                    $customer->setDefaultBilling($cBillingAddress->getId());
+                    $customer->save();
+                }
             }
             if (!empty($this->collectorSession->getNewsletterSignup(''))) {
                 $this->subscriberFactory->create()->subscribe($response['data']['customer']['email']);
