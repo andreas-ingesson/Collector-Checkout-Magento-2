@@ -14,16 +14,24 @@ class Config
      * @var Session
      */
     protected $collectorSession;
+    
+    /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    protected $productMetadata;
 
     /**
      * Config constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param Session $collectorSession
+     * @param \Magento\Framework\App\ProductMetadataInterface $productMetadata
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Collector\Base\Model\Session $collectorSession
+        \Collector\Base\Model\Session $collectorSession,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
     ) {
+        $this->productMetadata = $productMetadata;
         $this->collectorSession = $collectorSession;
         $this->scopeConfig = $scopeConfig;
     }
@@ -351,6 +359,11 @@ class Config
 
     public function isShippingAddressEnabled(): bool
     {
+        $version = $this->productMetadata->getVersion();
+        $minorVersion = explode('.', $version)[1];
+        if ($minorVersion < 2){
+            return false;
+        }
         $isEnabled = $this->scopeConfig->getValue(
             'collector_collectorcheckout/general/shippingaddress',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
