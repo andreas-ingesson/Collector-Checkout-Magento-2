@@ -53,7 +53,6 @@ class Cart extends \Magento\Checkout\Block\Onepage
      * @param \Magento\Checkout\Model\Session $_checkoutSession
      * @param \Magento\Framework\Data\Form\FormKey $formKey
      * @param \Magento\Checkout\Model\CompositeConfigProvider $configProvider
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Pricing\Helper\Data $pricingData
      * @param \Collector\Iframe\Helper\Data $_helper
      * @param \Collector\Base\Model\Session $_collectorSession
@@ -69,7 +68,6 @@ class Cart extends \Magento\Checkout\Block\Onepage
         \Magento\Checkout\Model\Session $_checkoutSession,
         \Magento\Framework\Data\Form\FormKey $formKey,
         \Magento\Checkout\Model\CompositeConfigProvider $configProvider,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Pricing\Helper\Data $pricingData,
         \Collector\Iframe\Helper\Data $_helper,
         \Collector\Base\Model\Session $_collectorSession,
@@ -81,6 +79,12 @@ class Cart extends \Magento\Checkout\Block\Onepage
         array $data = []
     ) {
         parent::__construct($context, $formKey, $configProvider, $layoutProcessors, $data);
+        
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        //end of hack
+        
         $this->collectorPriceHelper = $collectorPriceHelper;
         $this->checkoutHelper = $checkoutHelper;
         $this->collectorConfig = $collectorConfig;
@@ -88,7 +92,6 @@ class Cart extends \Magento\Checkout\Block\Onepage
         $this->collectorSession = $_collectorSession;
         $this->storeManager = $context->getStoreManager();
         $this->pricingData = $pricingData;
-        $this->scopeConfig = $scopeConfig;
         $this->helper = $_helper;
         $this->checkoutSession = $_checkoutSession;
         $this->init();

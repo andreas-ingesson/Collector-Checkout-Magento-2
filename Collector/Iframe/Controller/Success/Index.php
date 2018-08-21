@@ -151,14 +151,12 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $_quoteCollectionFactory
      * @param \Magento\Quote\Model\Quote\Address\Rate $_shippingRate
      * @param \Magento\Framework\Event\Manager $eventManager
-     * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Collector\Base\Model\Session $_collectorSession
      * @param \Collector\Iframe\Model\State $orderState
      * @param \Magento\Framework\App\Response\Http $response
      * @param \Magento\Customer\Model\AddressFactory $addressFactory
-     * @param \Magento\Framework\App\Response\RedirectInterface $redirect
      * @param \Magento\Customer\Model\Session $customerSession
 	 * @param \Magento\Customer\Api\AddressRepositoryInterface $_addressRepository
 	 * @param \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder
@@ -180,18 +178,22 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $_quoteCollectionFactory,
         \Magento\Quote\Model\Quote\Address\Rate $_shippingRate,
         \Magento\Framework\Event\Manager $eventManager,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Collector\Base\Model\Session $_collectorSession,
         \Collector\Iframe\Model\State $orderState,
         \Magento\Framework\App\Response\Http $response,
         \Magento\Customer\Model\AddressFactory $addressFactory,
-        \Magento\Framework\App\Response\RedirectInterface $redirect,
         \Magento\Customer\Model\Session $customerSession,
 		\Magento\Customer\Api\AddressRepositoryInterface $_addressRepository,
 		\Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder
     ) {
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->messageManager = $objectManager->get('\Magento\Framework\Message\ManagerInterface');
+        $this->redirect = $objectManager->get('\Magento\Framework\App\Response\RedirectInterface');
+        //end of hack
+        
 		$this->transactionBuilder = $transactionBuilder;
 		$this->addressRepository = $_addressRepository;
         $this->fraudCollection = $fraudCollection;
@@ -200,8 +202,6 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->apiRequest = $apiRequest;
         $this->collectorConfig = $collectorConfig;
         $this->response = $response;
-        $this->redirect = $redirect;
-        $this->messageManager = $messageManager;
         $this->logger = $logger;
         $this->collectorSession = $_collectorSession;
         $this->orderSender = $orderSender;

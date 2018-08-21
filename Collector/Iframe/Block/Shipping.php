@@ -40,7 +40,6 @@ class Shipping extends \Magento\Framework\View\Element\Template
      * Shipping constructor.
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Checkout\Model\Session $_checkoutSession
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Collector\Iframe\Helper\Data $helper
      * @param \Collector\Base\Model\Config $collectorConfig
      * @param \Magento\Framework\App\Cache\Type\Config $configCacheType
@@ -50,7 +49,6 @@ class Shipping extends \Magento\Framework\View\Element\Template
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Checkout\Model\Session $_checkoutSession,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Collector\Iframe\Helper\Data $helper,
         \Collector\Base\Model\Config $collectorConfig,
         \Magento\Framework\App\Cache\Type\Config $configCacheType,
@@ -58,9 +56,14 @@ class Shipping extends \Magento\Framework\View\Element\Template
         array $data = []
     ) {
         parent::__construct($context, $data);
+        
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        //end of hack
+        
         $this->collectorConfig = $collectorConfig;
         $this->helper = $helper;
-        $this->scopeConfig = $scopeConfig;
         $this->configCacheType = $configCacheType;
         $this->countryCollectionFactory = $countryCollectionFactory;
         $this->checkoutSession = $_checkoutSession;

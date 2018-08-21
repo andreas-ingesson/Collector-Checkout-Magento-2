@@ -110,7 +110,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\Message\ManagerInterface $_messageManager
      * @param \Collector\Base\Model\Config $collectorConfig
      * @param \Collector\Base\Helper\Prices $collectorPriceHelper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
@@ -130,10 +129,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Checkout\Helper\Data $checkoutHelper,
         \Magento\Framework\Message\ManagerInterface $_messageManager,
         \Collector\Base\Model\Config $collectorConfig,
-        \Collector\Base\Helper\Prices $collectorPriceHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Collector\Base\Helper\Prices $collectorPriceHelper
     ) {
-        $this->scopeConfig = $scopeConfig;
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        //end of hack
+        
         $this->collectorPriceHelper = $collectorPriceHelper;
         $this->checkoutHelper = $checkoutHelper;
         $this->apiRequest = $apiRequest;

@@ -17,10 +17,13 @@ class Prices extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Checkout\Helper\Data $checkoutHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Checkout\Helper\Data $checkoutHelper
     ) {
-        $this->scopeConfig = $scopeConfig;
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        //end of hack
+        
         $this->checkoutHelper = $checkoutHelper;
         return parent::__construct($context);
     }

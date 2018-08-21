@@ -115,7 +115,6 @@ class Cajax extends \Magento\Framework\App\Action\Action
      * @param \Collector\Base\Model\ApiRequest $apiRequest
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockState
-     * @param \Magento\Framework\Message\ManagerInterface $_messageManager
      * @param \Magento\CatalogInventory\Model\StockStateProvider $_stockStateProvider
      * @param \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface
      * @param \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource
@@ -136,7 +135,6 @@ class Cajax extends \Magento\Framework\App\Action\Action
         \Collector\Base\Model\ApiRequest $apiRequest,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\CatalogInventory\Api\StockStateInterface $stockState,
-        \Magento\Framework\Message\ManagerInterface $_messageManager,
         \Magento\CatalogInventory\Model\StockStateProvider $_stockStateProvider,
         \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface,
         \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource,
@@ -144,6 +142,12 @@ class Cajax extends \Magento\Framework\App\Action\Action
 		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository
     ) {
         parent::__construct($context);
+        
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->messageManager = $objectManager->get('\Magento\Framework\Message\ManagerInterface');
+        //end of hack
+        
 		$this->productRepository = $productRepository;
         $this->apiRequest = $apiRequest;
         $this->logger = $logger;
@@ -157,7 +161,6 @@ class Cajax extends \Magento\Framework\App\Action\Action
         $this->jsonHelper = $jsonHelper;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->stockState = $stockState;
-        $this->messageManager = $_messageManager;
         $this->stockStateProvider = $_stockStateProvider;
         $this->stockItemInterface = $_stockItemInterface;
         $this->stockItemResource = $_stockItemResource;
