@@ -19,3 +19,7 @@ $collectorSession->setCollectorPublicToken('');
     <script src="<?php echo $url; ?>" data-token="<?php echo $publicToken; ?>"
             data-lang='<?php echo $dataLang; ?>' <?php echo $dataVariant; ?>></script>
 </div>
+
+<?php
+    $this->clearSession();
+?>

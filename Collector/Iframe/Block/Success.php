@@ -20,6 +20,11 @@ class Success extends \Magento\Checkout\Block\Onepage
     protected $collectorSession;
 
     /**
+     * @var \Magento\Checkout\Model\Session
+     */
+    protected $checkoutSession;
+    
+    /**
      * @var \Collector\Base\Logger\Collector
      */
     protected $logger;
@@ -33,6 +38,7 @@ class Success extends \Magento\Checkout\Block\Onepage
      * @param \Collector\Iframe\Helper\Data $_helper
      * @param \Collector\Base\Logger\Collector $logger
      * @param \Collector\Base\Model\Session $_collectorSession
+     * @param \Magento\Checkout\Model\Session $_checkoutSession
      * @param array $data
      * @param array $layoutProcessors
      */
@@ -44,6 +50,7 @@ class Success extends \Magento\Checkout\Block\Onepage
         \Collector\Iframe\Helper\Data $_helper,
         \Collector\Base\Logger\Collector $logger,
         \Collector\Base\Model\Session $_collectorSession,
+        \Magento\Checkout\Model\Session $_checkoutSession,
         array $data = [],
         array $layoutProcessors = []
     ) {
@@ -51,6 +58,7 @@ class Success extends \Magento\Checkout\Block\Onepage
         $this->collectorSession = $_collectorSession;
         $this->logger = $logger;
         $this->helper = $_helper;
+        $this->checkoutSession = $_checkoutSession;
         $this->shippingRate = $shippingRate;
         $this->storeManager = $context->getStoreManager();
     }
@@ -63,5 +71,10 @@ class Success extends \Magento\Checkout\Block\Onepage
     public function getStoreBaseUrl()
     {
         return $this->storeManager->getStore()->getBaseUrl();
+    }
+    
+    public function clearSession(){
+        $this->checkoutSession->clearStorage();
+        $this->checkoutSession->clearQuote();
     }
 }

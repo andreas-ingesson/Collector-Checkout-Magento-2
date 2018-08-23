@@ -578,8 +578,8 @@ class Index extends \Magento\Framework\App\Action\Action
                 'checkout_onepage_controller_success_action',
                 ['order_ids' => [$order->getId()]]
             );
-            $this->checkoutSession->clearStorage();
-            $this->checkoutSession->clearQuote();
+            $this->checkoutSession->setLastOrderId($order->getId());
+
 
             $fraud = $this->fraudCollection->addFieldToFilter('increment_id', $response['data']['reference'])
                 ->getFirstItem();

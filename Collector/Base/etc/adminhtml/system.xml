@@ -94,14 +94,14 @@
 				<field id="invoice_fee_b2c" translate="label comment" type="text" sortOrder="155" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Invoice Fee B2C</label>
 				</field>
-				<field id="invoice_fee_b2c_tax_class" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+				<field id="invoice_fee_b2c_tax_class" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Tax Class for B2C Invoice Fee</label>
                     <source_model>Magento\Tax\Model\TaxClass\Source\Product</source_model>
                 </field>
 				<field id="invoice_fee_b2b" translate="label comment" type="text" sortOrder="165" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Invoice Fee B2B</label>
 				</field>
-				<field id="invoice_fee_b2b_tax_class" translate="label" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+				<field id="invoice_fee_b2b_tax_class" translate="label" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Tax Class for B2B Invoice Fee</label>
                     <source_model>Magento\Tax\Model\TaxClass\Source\Product</source_model>
                 </field>
