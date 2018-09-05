@@ -6,6 +6,12 @@ The Invoice Fee will not be shown in the cart section on checkout page
 
 Known to work in versions: 2.2.0 and 2.1.8
 
+#### Google Tag Manager
+We recommend using WeltPixels plugin called Magento 2 Google Analytics Enhanced Ecommerce UA GTM Tracking.
+Their GTM plugin can be found here: https://www.weltpixel.com/google-analytics-enhanced-ecommerce-tag-manager-magento-2.html
+We have built a compatability plugin for WeltPixels plugin mentioned above.
+The compatability plugin can be found here: https://github.com/Ecomatic/Collector-Checkout-Weltpixel-GTM-compatibility
+
 ## Firewall
 If you are using a firewall some urls need to be opened to be able to use this plugin, those are:
 * ecommercetest.collector.se
