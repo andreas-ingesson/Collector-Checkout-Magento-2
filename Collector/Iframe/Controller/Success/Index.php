@@ -367,7 +367,7 @@ class Index extends \Magento\Framework\App\Action\Action
             //load customer by email address
             $customer->loadByEmail($email);
             
-            if ($this->collectorConfig->getUpdateDbCustomer() && $customer->getEntityId() !== false){
+            if ($this->collectorConfig->getUpdateDbCustomer() && $customer->getEntityId() !== null){
                 if (isset($shippingAddressArr)) {
                     $cShippingAddress = $this->addressFactory->create();
                     $cShippingAddress->setCustomerId($customer->getId());
