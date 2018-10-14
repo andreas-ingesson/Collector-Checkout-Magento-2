@@ -370,7 +370,7 @@ class Index extends \Magento\Framework\App\Action\Action
             if ($this->collectorConfig->getUpdateDbCustomer() && $customer->getEntityId() !== null){
                 $shippingAddressExists = false;
                 $billingAddressExists = false;
-                foreach ($customerObj->getAddresses() as $address){
+                foreach ($customer->getAddresses() as $address){
                     $addArr = $address->toArray();
                     if (isset($shippingAddressArr)){
                         if ($shippingAddressArr['street'] == $addArr['street'] && $shippingAddressArr['postcode'] == $addArr['postcode'] && $shippingAddressArr['firstname'] == $addArr['firstname'] && $shippingAddressArr['lastname'] == $addArr['lastname'] && $shippingAddressArr['city'] == $addArr['city']){
