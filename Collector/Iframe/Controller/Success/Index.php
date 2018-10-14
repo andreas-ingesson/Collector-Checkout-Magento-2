@@ -368,42 +368,59 @@ class Index extends \Magento\Framework\App\Action\Action
             $customer->loadByEmail($email);
             
             if ($this->collectorConfig->getUpdateDbCustomer() && $customer->getEntityId() !== null){
-                if (isset($shippingAddressArr)) {
-                    $cShippingAddress = $this->addressFactory->create();
-                    $cShippingAddress->setCustomerId($customer->getId());
-                    $cShippingAddress->setFirstname($firstname);
-                    $cShippingAddress->setLastname($lastname);
-                    $cShippingAddress->setCountryId($response['data']['countryCode']);
-                    $cShippingAddress->setPostcode($shippingAddressArr['postcode']);
-                    $cShippingAddress->setCity($shippingAddressArr['city']);
-                    $cShippingAddress->setTelephone($shippingAddressArr['telephone']);
-                    if ($shippingAddressArr['company'] != '') {
-                        $cShippingAddress->setCompany($shippingAddressArr['company']);
+                $shippingAddressExists = false;
+                $billingAddressExists = false;
+                foreach ($customerObj->getAddresses() as $address){
+                    $addArr = $address->toArray();
+                    if (isset($shippingAddressArr)){
+                        if ($shippingAddressArr['street'] == $addArr['street'] && $shippingAddressArr['postcode'] == $addArr['postcode'] && $shippingAddressArr['firstname'] == $addArr['firstname'] && $shippingAddressArr['lastname'] == $addArr['lastname'] && $shippingAddressArr['city'] == $addArr['city']){
+                            $shippingAddressExists = true;
+                        }
                     }
-                    $cShippingAddress->setStreet($shippingAddressArr['street']);
-                    $cShippingAddress->setIsDefaultShipping('1');
-                    $cShippingAddress->setSaveInAddressBook('1');
-                    $cShippingAddress->save();
-                    $customer->setDefaultShipping($cShippingAddress->getId());
+                    if ($billingAddress['street'] == $addArr['street'] && $billingAddress['postcode'] == $addArr['postcode'] && $billingAddress['firstname'] == $addArr['firstname'] && $billingAddress['lastname'] == $addArr['lastname'] && $billingAddress['city'] == $addArr['city']){
+                        $billingAddressExists = true;
+                    }
+                }
+                if (!$shippingAddressExists){
+                    if (isset($shippingAddressArr)) {
+                        $cShippingAddress = $this->addressFactory->create();
+                        $cShippingAddress->setCustomerId($customer->getId());
+                        $cShippingAddress->setFirstname($firstname);
+                        $cShippingAddress->setLastname($lastname);
+                        $cShippingAddress->setCountryId($response['data']['countryCode']);
+                        $cShippingAddress->setPostcode($shippingAddressArr['postcode']);
+                        $cShippingAddress->setCity($shippingAddressArr['city']);
+                        $cShippingAddress->setTelephone($shippingAddressArr['telephone']);
+                        if ($shippingAddressArr['company'] != '') {
+                            $cShippingAddress->setCompany($shippingAddressArr['company']);
+                        }
+                        $cShippingAddress->setStreet($shippingAddressArr['street']);
+                        $cShippingAddress->setIsDefaultShipping('1');
+                        $cShippingAddress->setSaveInAddressBook('1');
+                        $cShippingAddress->save();
+                        $customer->setDefaultShipping($cShippingAddress->getId());
+                        $customer->save();
+                    }
+                }
+                if (!$billingAddressExists){
+                    $cBillingAddress = $this->addressFactory->create();
+                    $cBillingAddress->setCustomerId($customer->getId());
+                    $cBillingAddress->setFirstname($firstname);
+                    $cBillingAddress->setLastname($lastname);
+                    $cBillingAddress->setCountryId($response['data']['countryCode']);
+                    $cBillingAddress->setPostcode($billingAddress['postcode']);
+                    $cBillingAddress->setCity($billingAddress['city']);
+                    $cBillingAddress->setTelephone($billingAddress['telephone']);
+                    if ($billingAddress['company'] != '') {
+                        $cBillingAddress->setCompany($billingAddress['company']);
+                    }
+                    $cBillingAddress->setStreet($billingAddress['street']);
+                    $cBillingAddress->setIsDefaultBilling('1');
+                    $cBillingAddress->setSaveInAddressBook('1');
+                    $cBillingAddress->save();
+                    $customer->setDefaultBilling($cBillingAddress->getId());
                     $customer->save();
                 }
-                $cBillingAddress = $this->addressFactory->create();
-                $cBillingAddress->setCustomerId($customer->getId());
-                $cBillingAddress->setFirstname($firstname);
-                $cBillingAddress->setLastname($lastname);
-                $cBillingAddress->setCountryId($response['data']['countryCode']);
-                $cBillingAddress->setPostcode($billingAddress['postcode']);
-                $cBillingAddress->setCity($billingAddress['city']);
-                $cBillingAddress->setTelephone($billingAddress['telephone']);
-                if ($billingAddress['company'] != '') {
-                    $cBillingAddress->setCompany($billingAddress['company']);
-                }
-                $cBillingAddress->setStreet($billingAddress['street']);
-                $cBillingAddress->setIsDefaultBilling('1');
-                $cBillingAddress->setSaveInAddressBook('1');
-                $cBillingAddress->save();
-                $customer->setDefaultBilling($cBillingAddress->getId());
-                $customer->save();
             }
             
             
