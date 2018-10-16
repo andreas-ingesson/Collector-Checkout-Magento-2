@@ -191,6 +191,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getShippingMethods()
     {
+        $this->cart->getQuote()->collectTotals();
         $currentStoreId = $this->storeManager->getStore()->getId();
         $request = $this->taxCalculation->getRateRequest(null, null, null, $currentStoreId);
         $shippingAddress = $this->cart->getQuote()->getShippingAddress();
