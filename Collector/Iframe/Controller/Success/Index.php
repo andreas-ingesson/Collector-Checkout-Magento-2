@@ -228,6 +228,7 @@ class Index extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
+        $order = null;
         if (empty($this->collectorSession->getCollectorPublicToken(''))) {
             $this->logger->error('Error while public_token loading');
             $this->messageManager->addError(__('API request error.'));
@@ -612,39 +613,42 @@ class Index extends \Magento\Framework\App\Action\Action
             $order->save();
             return $resultPage;
         } catch (\Exception $e) {
-            if ($this->collectorSession->getBtype('') == \Collector\Base\Model\Session::B2B) {
-                $storeID = $this->collectorConfig->getB2BStoreID();
-            } else {
-                $storeID = $this->collectorConfig->getB2CStoreID();
-            }
-            if (isset($actual_quote)) {
-                $soap = $this->apiRequest->getInvoiceSOAP(['ClientIpAddress' => $actual_quote->getRemoteIp()]);
-                $actual_quote->setReservedOrderId(0);
-                $actual_quote->reserveOrderId();
-                $actual_quote->save();
-                $this->collectorSession->setCollectorPublicToken('');
-                $this->collectorSession->setCollectorDataVariant('');
-                $req = array(
-                    'CorrelationId' => $response['data']['reference'],
-                    'CountryCode' => $this->collectorConfig->getCountryCode(),
-                    'InvoiceNo' => $response['data']['purchase']['purchaseIdentifier'],
-                    'StoreId' => $storeID,
-                );
-                try {
-                    $soap->CancelInvoice($req);
-                    // Disable old quote
-                    $actual_quote->setIsActive(1);
-                    // Submit the quote and create the order
-                    $actual_quote->save();
-                } catch (\Exception $e) {
-                    $this->logger->error($e->getMessage());
-                    $this->logger->error($e->getTraceAsString());
+            if ($order == null){
+                if ($this->collectorSession->getBtype('') == \Collector\Base\Model\Session::B2B) {
+                    $storeID = $this->collectorConfig->getB2BStoreID();
+                } else {
+                    $storeID = $this->collectorConfig->getB2CStoreID();
                 }
+                if (isset($actual_quote)) {
+                    $soap = $this->apiRequest->getInvoiceSOAP(['ClientIpAddress' => $actual_quote->getRemoteIp()]);
+                    $actual_quote->setReservedOrderId(0);
+                    $actual_quote->reserveOrderId();
+                    $actual_quote->save();
+                    $this->collectorSession->setCollectorPublicToken('');
+                    $this->collectorSession->setCollectorDataVariant('');
+                    $req = array(
+                        'CorrelationId' => $response['data']['reference'],
+                        'CountryCode' => $this->collectorConfig->getCountryCode(),
+                        'InvoiceNo' => $response['data']['purchase']['purchaseIdentifier'],
+                        'StoreId' => $storeID,
+                    );
+                    try {
+                        $soap->CancelInvoice($req);
+                        // Disable old quote
+                        $actual_quote->setIsActive(1);
+                        // Submit the quote and create the order
+                        $actual_quote->save();
+                    } catch (\Exception $e) {
+                        $this->logger->error($e->getMessage());
+                        $this->logger->error($e->getTraceAsString());
+                    }
+                }
+                $this->logger->error($e->getMessage());
+                $this->logger->error($e->getTraceAsString());
+                $this->messageManager->addError($e->getMessage());
+                return $this->redirect->redirect($this->response, '/');
             }
-            $this->logger->error($e->getMessage());
-            $this->logger->error($e->getTraceAsString());
-            $this->messageManager->addError($e->getMessage());
-            return $this->redirect->redirect($this->response, '/');
+            return $resultPage;
         }
     }
 
