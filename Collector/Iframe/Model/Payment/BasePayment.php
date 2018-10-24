@@ -155,7 +155,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         $order = $payment->getOrder();
         $quote = $order->getQuote();
         $isIframe = false;
-        if (!empty($this->collectorSession->getIsIframe())) {
+        if (!empty($this->collectorSession->getIsIframe()) || is_null($order->getId())) {
             $isIframe = true;
             $payment->setIsTransactionClosed(false);
         }

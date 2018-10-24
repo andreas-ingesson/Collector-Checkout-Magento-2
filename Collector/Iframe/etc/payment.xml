@@ -12,6 +12,9 @@
 		<method name="card">
 			<allow_multiple_address>1</allow_multiple_address>
 		</method>
+		<method name="base">
+			<allow_multiple_address>1</allow_multiple_address>
+		</method>
 		<method name="bank">
 			<allow_multiple_address>1</allow_multiple_address>
 		</method>

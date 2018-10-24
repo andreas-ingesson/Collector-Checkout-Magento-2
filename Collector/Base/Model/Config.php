@@ -59,6 +59,11 @@ class Config
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
+    
+    public function getPendingStatus()
+    {
+        return 'collector_pending';
+    }
 
     public function getHoldStatus()
     {

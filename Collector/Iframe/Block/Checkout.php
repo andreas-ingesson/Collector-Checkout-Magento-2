@@ -35,6 +35,10 @@ class Checkout extends \Magento\Checkout\Block\Onepage
      * @var \Collector\Base\Model\ApiRequest
      */
     protected $apiRequest;
+    /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $customerSession;
 
     /**
      * Checkout constructor.
@@ -46,6 +50,7 @@ class Checkout extends \Magento\Checkout\Block\Onepage
      * @param \Collector\Base\Model\Config $collectorConfig
      * @param \Collector\Base\Model\Session $_collectorSession
      * @param \Collector\Base\Model\ApiRequest $apiRequest
+     * @param \Magento\Customer\Model\Session $customerSession
      * @param array $layoutProcessors
      * @param array $data
      */
@@ -58,12 +63,14 @@ class Checkout extends \Magento\Checkout\Block\Onepage
         \Collector\Base\Model\Config $collectorConfig,
         \Collector\Base\Model\Session $_collectorSession,
         \Collector\Base\Model\ApiRequest $apiRequest,
+        \Magento\Customer\Model\Session $customerSession,
         array $layoutProcessors = [],
         array $data = []
     ) {
         parent::__construct($context, $formKey, $configProvider, $layoutProcessors, $data);
         $this->apiRequest = $apiRequest;
         $this->collectorConfig = $collectorConfig;
+        $this->customerSession = $customerSession;
         $this->collectorSession = $_collectorSession;
         $this->helper = $_helper;
         $this->cart = $_cart;
@@ -104,12 +111,15 @@ class Checkout extends \Magento\Checkout\Block\Onepage
             $dataVariant = ' data-variant="b2b" async';
         }
         $this->collectorSession->setCollectorDataVariant($dataVariant);
+        $this->cart->getQuote()->setData('collector_btype', $dataVariant);
+        $this->cart->getQuote()->save();
         return $dataVariant;
     }
 
     public function getPublicToken()
     {
-        if (!empty($this->collectorSession->getCollectorPublicToken())) {
+        $this->customerSession->setCollectorIncrementId($this->cart->getQuote()->getReservedOrderId());
+        if (!empty($this->cart->getQuote()->getData('collector_private_id'))) {
             $this->helper->updateCart();
             $this->helper->updateFees();
             return $this->collectorSession->getCollectorPublicToken();
@@ -124,6 +134,7 @@ class Checkout extends \Magento\Checkout\Block\Onepage
             'redirectPageUri' => $this->helper->getSuccessPageUrl(),
             'merchantTermsUri' => $this->collectorConfig->getTermsUrl(),
             'notificationUri' => $this->helper->getNotificationUrl(),
+            'validationUri' => $this->helper->getValidationUrl(),
             "cart" => ['items' => $this->helper->getProducts()],
             "fees" => $this->helper->getFees()
         ]);
@@ -133,6 +144,7 @@ class Checkout extends \Magento\Checkout\Block\Onepage
         $this->collectorSession->setCollectorPublicToken($result["data"]["publicToken"]);
         $this->collectorSession->setCollectorPrivateId($result['data']['privateId']);
         $this->cart->getQuote()->setData('collector_private_id', $result['data']['privateId']);
+        $this->cart->getQuote()->setData('collector_public_token', $result["data"]["publicToken"]);
         $this->cart->getQuote()->setData('collector_btype', $this->collectorSession->getBtype());
         $this->cart->getQuote()->save();
         return $publicToken = $result["data"]["publicToken"];

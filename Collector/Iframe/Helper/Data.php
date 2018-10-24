@@ -159,13 +159,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getSuccessPageUrl()
     {
-        return $this->storeManager->getStore()->getBaseUrl() . "collectorcheckout/success/";
+        return $this->storeManager->getStore()->getBaseUrl() . "collectorcheckout/success?OrderNo=" .
+            $this->cart->getQuote()->getReservedOrderId();
     }
 
     public function getNotificationUrl()
     {
         return $this->storeManager->getStore()->getBaseUrl() .
-            "collectorcheckout/CollectorInvoiceStatus?OrderNo=" .
+            "collectorcheckout/notification?OrderNo=" .
+            $this->cart->getQuote()->getReservedOrderId();
+    }
+    
+    public function getValidationUrl()
+    {
+        return $this->storeManager->getStore()->getBaseUrl() .
+            "collectorcheckout/validation?OrderNo=" .
             $this->cart->getQuote()->getReservedOrderId();
     }
 

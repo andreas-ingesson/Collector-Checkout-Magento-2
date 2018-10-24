@@ -8,6 +8,18 @@
 			<label>Checkout</label>
 			<tab>collector</tab>
 			<resource>Collector_CollectorCheckout::collector_collectorcheckout</resource>
+            <group id="version" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Versions</label>
+                <field id="base" translate="label comment" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Version of Base Module</label>
+                </field>
+                <field id="gateways" translate="label comment" type="label" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Version of Gateways Module</label>
+                </field>
+                <field id="iframe" translate="label comment" type="label" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Version of Iframe Module</label>
+                </field>
+            </group>
 			<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
 				<label>General</label>
 				<field id="active" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -67,13 +79,13 @@
 					</comment>
 				</field>
 
-				<field id="shippingaddress" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+			<!--	<field id="shippingaddress" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Enable Shipping Address</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 					<comment>
 
 					</comment>
-				</field>
+				</field>-->
 				<field id="create_account" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Create Customer Account if it doesn't exist</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

@@ -294,6 +294,12 @@ class Cajax extends \Magento\Framework\App\Action\Action
                     break;
                 case "newsletter":
                     $this->collectionSession->setNewsletterSignup($this->getRequest()->getParam('value') == "true");
+                    if ($this->getRequest()->getParam('value')){
+                        $this->cart->getQuote()->setData('newsletter_signup', 1);
+                    }
+                    else {
+                        $this->cart->getQuote()->setData('newsletter_signup', 0);
+                    }
                     break;
                 case "del":
                     $allItems = $this->cart->getQuote()->getAllVisibleItems();
