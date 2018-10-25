@@ -132,11 +132,17 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface
      */
     protected $transactionBuilder;
+    
+    /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+     protected $productMetaData;
 	
     /**
      * Index constructor.
      * @param \Collector\Base\Model\Config $collectorConfig
      * @param \Collector\Base\Model\ApiRequest $apiRequest
+     * @param \Magento\Framework\App\ProductMetadataInterface $_productMetaData
      * @param \Collector\Iframe\Helper\Data $_helper
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
@@ -164,6 +170,7 @@ class Index extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Collector\Base\Model\Config $collectorConfig,
         \Collector\Base\Model\ApiRequest $apiRequest,
+        \Magento\Framework\App\ProductMetadataInterface $_productMetaData,
         \Collector\Iframe\Helper\Data $_helper,
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
@@ -193,9 +200,10 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->messageManager = $objectManager->get('\Magento\Framework\Message\ManagerInterface');
         $this->redirect = $objectManager->get('\Magento\Framework\App\Response\RedirectInterface');
         //end of hack
-        
-		$this->transactionBuilder = $transactionBuilder;
-		$this->addressRepository = $_addressRepository;
+
+        $this->productMetaData = $_productMetaData;
+        $this->transactionBuilder = $transactionBuilder;
+        $this->addressRepository = $_addressRepository;
         $this->fraudCollection = $fraudCollection;
         $this->customerSession = $customerSession;
         $this->addressFactory = $addressFactory;
@@ -522,7 +530,10 @@ class Index extends \Magento\Framework\App\Action\Action
             $actual_quote->save();
             $this->collectorSession->setIsIframe(1);
             $order = $this->quoteManagement->submit($actual_quote);
-            $this->orderSender->send($order);
+
+            if (str_replace('.', '', $this->productMetaData->getVersion()) < 226){
+                $this->orderSender->send($order);
+            }
             $order->setCollectorInvoiceId($response['data']['purchase']['purchaseIdentifier']);
 
             if ($this->collectorSession->getBtype('') == \Collector\Base\Model\Session::B2B) {
