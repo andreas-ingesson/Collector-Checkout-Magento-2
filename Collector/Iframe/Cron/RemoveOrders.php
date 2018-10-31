@@ -49,7 +49,7 @@ class RemoveOrders
         }
         $orders = $this->orderCollectionFactory->create()->addFieldToSelect('*')->
             addFieldToFilter('status', array('eq' => 'collector_pending'))->
-            addFieldToFilter('created_at', ['to' => new \Zend_Db_Expr('DATE_ADD(NOW(), INTERVAL -10 MINUTE)')]);
+            addFieldToFilter('created_at', ['to' => new \Zend_Db_Expr('DATE_ADD(NOW(), INTERVAL -5 HOUR)')]);
         foreach ($orders as $order){
             $order->delete();
         }

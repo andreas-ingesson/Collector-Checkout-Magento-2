@@ -4,15 +4,6 @@ namespace Collector\Iframe\Controller\Validation;
 
 class Index extends \Magento\Framework\App\Action\Action
 {
-    
-    protected $paymentToMethod = [
-        'DirectInvoice' => 'collector_invoice',
-        'PartPayment' => 'collector_partpay',
-        'Account' => 'collector_account',
-        'Card' => 'collector_card',
-        'Bank' => 'collector_bank',
-    ];
-
     /**
      * @var \Magento\Framework\View\Result\PageFactory
      */
@@ -124,6 +115,10 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Collector\Iframe\Model\State
      */
     protected $orderState;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
     
     /**
      * Index constructor.
@@ -153,6 +148,7 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Magento\Quote\Model\QuoteManagement $quoteManagement
      * @param \Magento\Customer\Model\AddressFactory $addressFactory
      * @param \Collector\Iframe\Model\State $orderState
+     * @param \Magento\Framework\Registry $registry
 	 * @param \Collector\Base\Model\Config $_config
      */
     public function __construct(
@@ -183,10 +179,12 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Quote\Model\QuoteManagement $quoteManagement,
         \Magento\Customer\Model\AddressFactory $addressFactory,
         \Collector\Iframe\Model\State $orderState,
+        \Magento\Framework\Registry $registry,
 		\Collector\Base\Model\Config $_config
     ) {
         $this->checkerFactory = $checkerFactory;
 		$this->config = $_config;
+        $this->registry = $registry;
         $this->fraudFactory = $fraudFactory;
         $this->collectorLogger = $logger;
         $this->apiRequest = $apiRequest;
@@ -221,7 +219,15 @@ class Index extends \Magento\Framework\App\Action\Action
         $resultPage = $this->resultJsonFactory->create();
         
         if ($order->getId()) {
+            $tempRegistry = $this->registry->registry('isSecureArea');
+            if (!$tempRegistry){
+                $this->registry->unregister('isSecureArea');
+                $this->registry->register('isSecureArea', true);
+            }
             $order->delete();
+            $this->registry->unregister('isSecureArea');
+            $this->registry->register('isSecureArea', $tempRegistry);
+            
         }
         $quote = $this->quoteCollectionFactory->create()->addFieldToFilter(
             "reserved_order_id",
@@ -242,7 +248,6 @@ class Index extends \Magento\Framework\App\Action\Action
                 return $result->setData($return);
             }
             $response = $this->getResp($quote->getData('collector_private_id'), $quote->getData('collector_btype'));
-            $createAccount = $this->collectorConfig->createAccount();
             if ($response["code"] == 0) {
                 $this->collectorLogger->error($response['error']);
                 $return = array(
@@ -253,12 +258,8 @@ class Index extends \Magento\Framework\App\Action\Action
                 $result->setHttpResponseCode(500);
                 return $result->setData($return);
             }
-            $actual_quote = $this->quoteCollectionFactory->create()->addFieldToFilter(
-                "reserved_order_id",
-                $response['data']['reference']
-            )->getFirstItem();
             //set payment method
-            $paymentMethod = $this->getPaymentMethodByName($response['data']['purchase']['paymentName']);
+            $paymentMethod = 'collector_base';
             $shippingCountryId = $this->getCountryCodeByName(
                 $response['data']['customer']['deliveryAddress']['country'],
                 $response['data']['countryCode']
@@ -274,15 +275,6 @@ class Index extends \Magento\Framework\App\Action\Action
                 $return = array(
                     'title' => "Could not place Order",
                     'message' => "Missing country information"
-                );
-                $result = $this->resultJsonFactory->create();
-                $result->setHttpResponseCode(500);
-                return $result->setData($return);
-            }
-            if (empty($actual_quote)) {
-                $return = array(
-                    'title' => "Session Has Expired",
-                    'message' => "Please reload the page"
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
@@ -352,14 +344,14 @@ class Index extends \Magento\Framework\App\Action\Action
                         'same_as_billing' => 0
                     ];
                 }
-                $actual_quote->getShippingAddress()->addData($shippingAddressArr);
+                $quote->getShippingAddress()->addData($shippingAddressArr);
 
                 // Collect Rates and Set Shipping & Payment Method
-                $this->shippingRate->setCode($actual_quote->getShippingAddress()->getShippingMethod())->getPrice();
-                $shippingAddress = $actual_quote->getShippingAddress();
+                $this->shippingRate->setCode($quote->getShippingAddress()->getShippingMethod())->getPrice();
+                $shippingAddress = $quote->getShippingAddress();
 
-                $actual_quote->getShippingAddress()->addShippingRate($this->shippingRate);
-                $actual_quote->getShippingAddress()->save();
+                $quote->getShippingAddress()->addShippingRate($this->shippingRate);
+                $quote->getShippingAddress()->save();
             }
             if (isset($response['data']['businessCustomer']['invoiceAddress'])) {
                 $billingAddress = array(
@@ -452,8 +444,7 @@ class Index extends \Magento\Framework\App\Action\Action
                     $customer->save();
                 }
             }
-            
-            
+            $createAccount = $this->collectorConfig->createAccount();
             //check the customer
             if (!$customer->getEntityId() && $createAccount) {
                 //If not avilable then create this customer
@@ -504,160 +495,48 @@ class Index extends \Magento\Framework\App\Action\Action
                     $customer->save();
                 }
             }
-            file_put_contents("var/log/coldev.log", "test 1\n", FILE_APPEND);
-            if ($actual_quote->getData('newsletter_signup') == 1) {
+            if ($quote->getData('newsletter_signup') == 1) {
                 $this->subscriberFactory->create()->subscribe($response['data']['customer']['email']);
             }
             if ($createAccount) {
                 $customer->setEmail($email);
                 $customer->save();
                 $customer = $this->customerRepository->getById($customer->getEntityId());
-                $actual_quote->assignCustomer($customer);
+                $quote->assignCustomer($customer);
             }
 
             //Set Address to quote @todo add section in order data for seperate billing and handle it
 
-            $actual_quote->getBillingAddress()->addData($billingAddress);
-            $actual_quote->setPaymentMethod($paymentMethod); //payment method
-            $actual_quote->getPayment()->importData(['method' => $paymentMethod]);
-            $actual_quote->setReservedOrderId($response['data']['reference']);
+            $quote->getBillingAddress()->addData($billingAddress);
+            $quote->setPaymentMethod($paymentMethod); //payment method
+            $quote->getPayment()->importData(['method' => $paymentMethod]);
+            $quote->getPayment()->save();
+            $quote->setReservedOrderId($response['data']['reference']);
             if ($createAccount) {
-                $actual_quote->getBillingAddress()->setCustomerId($customer->getId());
-                $actual_quote->getShippingAddress()->setCustomerId($customer->getId());
+                $quote->getBillingAddress()->setCustomerId($customer->getId());
+                $quote->getShippingAddress()->setCustomerId($customer->getId());
             }
-
-            $fee = 0;
-            if ($this->getPaymentMethodByName($response['data']['purchase']['paymentName']) == 'collector_invoice'){
-                if ($response['data']['customerType'] == "PrivateCustomer"){
-                    $fee = $this->apiRequest->convert($this->collectorConfig->getInvoiceB2CFee(), null, 'SEK');
-                }
-                else {
-                    $fee = $this->apiRequest->convert($this->collectorConfig->getInvoiceB2BFee(), null, 'SEK');
-                }
-            }
-
-            $actual_quote->setFeeAmount($fee);
-            $actual_quote->setBaseFeeAmount($fee);
-
             if (!$createAccount) {
-                $actual_quote->setCustomerId(null);
-                $actual_quote->setCustomerEmail($email);
-                $actual_quote->setCustomerIsGuest(true);
-                $actual_quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
-                $actual_quote->setCheckoutMethod(\Magento\Quote\Api\CartManagementInterface::METHOD_GUEST);
+                $quote->setCustomerId(null);
+                $quote->setCustomerEmail($email);
+                $quote->setCustomerIsGuest(true);
+                $quote->setCustomerGroupId(\Magento\Customer\Api\Data\GroupInterface::NOT_LOGGED_IN_ID);
+                $quote->setCheckoutMethod(\Magento\Quote\Api\CartManagementInterface::METHOD_GUEST);
             }
-ob_start();
-var_dump($actual_quote->getData('collector_btype'));
-var_dump($actual_quote->getData('collector_public_token'));
-file_put_contents("var/log/coldev.log", "dump 1 ".ob_get_clean()."\n", FILE_APPEND);
             
-            $actual_quote->save();
-            $order = $this->quoteManagement->submit($actual_quote);
+            $quote->save();
+            $order = $this->quoteManagement->submit($quote);
             $order->setData('is_iframe', 1);
-            
-ob_start();
-var_dump($actual_quote->getData('collector_btype'));
-var_dump($actual_quote->getData('collector_public_token'));
-file_put_contents("var/log/coldev.log", "dump 2 ".ob_get_clean()."\n", FILE_APPEND);
-
-            
-            $order->setFeeAmount($fee);
-            $order->setBaseFeeAmount($fee);
-            $order->setGrandTotal($order->getGrandTotal() + $fee);
-            $order->setBaseGrandTotal($order->getBaseGrandTotal() + $fee);
-            
-            
             
             $pendingStatus = $this->collectorConfig->getPendingStatus();
             $pendingState = $this->orderState->load($pendingStatus)->getState();
             $order->setState($pendingState)->setStatus($pendingStatus);
             $order->save();
-ob_start();
-var_dump($actual_quote->getData('collector_btype'));
-var_dump($actual_quote->getData('collector_public_token'));
-file_put_contents("var/log/coldev.log", "dump 3 ".ob_get_clean()."\n", FILE_APPEND);
-            //REMOVE THIS AND PLACE SOME IN NOTIFICATION CALLBACK AND SOME IN SUCCESS/INDEX
-            /*
-            $this->orderSender->send($order);
-            $order->setCollectorInvoiceId($response['data']['purchase']['purchaseIdentifier']);
-
-            if ($this->collectorSession->getBtype('') == \Collector\Base\Model\Session::B2B) {
-                $order->setCollectorSsn($response['data']['businessCustomer']['organizationNumber']);
-            }
-
-			$payment = $order->getPayment();
-            $payment->setLastTransId($response['data']['purchase']['purchaseIdentifier']);
-            $payment->setTransactionId($response['data']['purchase']['purchaseIdentifier']);
-            $payment->setAdditionalInformation(
-                [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $response['data']['purchase']]
-            );
-            $formatedPrice = $order->getBaseCurrency()->formatTxt(
-                $order->getGrandTotal()
-            );
- 
-            $message = __('The authorized amount is %1.', $formatedPrice);
-            //get the object of builder class
-            $trans = $this->transactionBuilder;
-            $transaction = $trans->setPayment($payment)
-            ->setOrder($order)
-            ->setTransactionId($response['data']['purchase']['purchaseIdentifier'])
-            ->setAdditionalInformation(
-                [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $response['data']['purchase']]
-            )
-            ->setFailSafe(true)
-            //build method creates the transaction and returns the object
-            ->build(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH);
- 
-            $payment->addTransactionCommentsToOrder(
-                $transaction,
-                $message
-            );
-            $payment->setParentTransactionId(null);
-            $payment->save();
-            $order->save();
-			
-            $order->setFeeAmount($fee);
-            $order->setBaseFeeAmount($fee);
-
-            $order->setGrandTotal($order->getGrandTotal() + $fee);
-            $order->setBaseGrandTotal($order->getBaseGrandTotal() + $fee);
-            if (!$this->setOrderStatusState($order, $response["data"]["purchase"]["result"])) {
-                $return = array(
-                    'title' => "Could not place Order",
-                    'message' => "unknown orderstatus"
-                );
-                $result = $this->resultJsonFactory->create();
-                $result->setHttpResponseCode(500);
-                return $result->setData($return);
-            }
-            $order->save();
-
-            $this->eventManager->dispatch(
-                'checkout_onepage_controller_success_action',
-                ['order_ids' => [$order->getId()]]
-            );
-            $this->checkoutSession->setLastOrderId($order->getId());
-
-            
-            $fraud = $this->fraudCollection->addFieldToFilter('increment_id', $response['data']['reference'])
-                ->getFirstItem();
-            if ($fraud->getId()) {
-                if ($fraud->getStatus() == 1) {
-                    $this->setOrderStatusState($order, 'Preliminary');
-                } elseif ($fraud->getStatus() == 2) {
-                    $this->setOrderStatusState($order, 'OnHold');
-                } else {
-                    $this->setOrderStatusState($order, '');
-                }
-            }
-            $order->save();
-            */
             $resp = array(
                 'orderReference' => $order->getIncrementId()
             );
             return $resultPage->setData($resp);
         } catch (\Exception $e) {
-            file_put_contents("var/log/coldev.log", $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
             $this->collectorLogger->error($e->getMessage());
             $return = array(
                 'title' => "Could not place Order",
@@ -688,11 +567,6 @@ file_put_contents("var/log/coldev.log", "dump 3 ".ob_get_clean()."\n", FILE_APPE
             return $result;
         }
         return [];
-    }
-    
-    protected function getPaymentMethodByName($name)
-    {
-        return isset($this->paymentToMethod[$name]) ? $this->paymentToMethod[$name] : 'collector_base';
     }
     
     private function getCountryCodeByName($name, $default)

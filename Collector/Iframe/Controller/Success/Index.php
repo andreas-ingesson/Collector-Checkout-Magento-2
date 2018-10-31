@@ -112,6 +112,7 @@ class Index extends \Magento\Framework\App\Action\Action
         'Account' => 'collector_account',
         'Card' => 'collector_card',
         'Bank' => 'collector_bank',
+        'Campaign' => 'collector_campaign'
     ];
 
     /**
@@ -235,30 +236,13 @@ class Index extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-        file_put_contents("var/log/coldev.log", "success page test 0\n", FILE_APPEND);
-        try {
-        file_put_contents("var/log/coldev.log", "success page test 1\n", FILE_APPEND);
         $order = $this->orderInterface->loadByIncrementId($this->customerSession->getCollectorIncrementId());
-        file_put_contents("var/log/coldev.log", "success page test 2\n", FILE_APPEND);
         $this->eventManager->dispatch(
             'checkout_onepage_controller_success_action',
             ['order_ids' => [$order->getId()]]
         );
-        file_put_contents("var/log/coldev.log", "success page test 3\n", FILE_APPEND);
-    //    $this->cart->getQuote()->setIsActive(0);
-        file_put_contents("var/log/coldev.log", "success page test 4\n", FILE_APPEND);
         $this->checkoutSession->setLastOrderId($order->getId());
-        file_put_contents("var/log/coldev.log", "success page test 5\n", FILE_APPEND);
         $resultPage = $this->resultPageFactory->create();
-        file_put_contents("var/log/coldev.log", "success page test 6\n", FILE_APPEND);
-        file_put_contents("var/log/coldev.log", "success page test 7\n", FILE_APPEND);
-                    ob_start();
-var_dump($this->cart->getQuote()->getData('collector_btype'));
-var_dump($this->cart->getQuote()->getData('collector_public_token'));
-file_put_contents("var/log/coldev.log", "dump 5 ".ob_get_clean()."\n", FILE_APPEND);
-        }catch (\Exception $e){
-    file_put_contents("var/log/coldev.log", "success controller error: " . $e->getMessage(), FILE_APPEND);
-}
         return $resultPage;
     }
 }

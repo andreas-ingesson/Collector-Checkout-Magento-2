@@ -1,22 +1,9 @@
 <?php
-/*$collectorSession = $block->getCollectorSession();
-$url = $collectorSession->getCollectorUrl('');
-$dataLang = $collectorSession->getCollectorLanguage('');
-$dataVariant = $collectorSession->getCollectorDataVariant('');
-$publicToken = $collectorSession->getCollectorPublicToken('');
-$collectorSession->setCollectorPublicToken('');*/
-        file_put_contents("var/log/coldev.log", "Success.phtml test 1\n", FILE_APPEND);
 $quote = $block->getQuote();
-        file_put_contents("var/log/coldev.log", "Success.phtml test 2\n", FILE_APPEND);
-        file_put_contents("var/log/coldev.log", "Success.phtml test 3\n", FILE_APPEND);
 $url = $block->getCheckoutUrl();
-        file_put_contents("var/log/coldev.log", "Success.phtml test 4\n", FILE_APPEND);
 $dataLang = $block->getLanguage();
-        file_put_contents("var/log/coldev.log", "Success.phtml test 5\n", FILE_APPEND);
 $dataVariant = $quote->getData('collector_btype');
-        file_put_contents("var/log/coldev.log", "Success.phtml test 6\n", FILE_APPEND);
 $publicToken = $quote->getData('collector_public_token');
-        file_put_contents("var/log/coldev.log", "Success.phtml test 7   \n", FILE_APPEND);
 ?>
 
 <script>

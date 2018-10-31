@@ -418,4 +418,13 @@ class Config
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
+    
+    public function getCheckoutUrl()
+    {
+        if ($this->getTestMode()) {
+            return "https://checkout-uat.collector.se/collector-checkout-loader.js";
+        } else {
+            return "https://checkout.collector.se/collector-checkout-loader.js";
+        }
+    }
 }

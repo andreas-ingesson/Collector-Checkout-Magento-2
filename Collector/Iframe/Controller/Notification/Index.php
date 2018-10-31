@@ -10,7 +10,9 @@ class Index extends \Magento\Framework\App\Action\Action
         'PartPayment' => 'collector_partpay',
         'Account' => 'collector_account',
         'Card' => 'collector_card',
-        'Bank' => 'collector_bank',
+        'BankTransfer' => 'collector_bank',
+        'Campaign' => 'collector_campaign',
+        'Trustly' => 'collector_trustly'
     ];
 
     protected $resultPageFactory;
@@ -109,76 +111,57 @@ class Index extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $resultPage = $this->resultPageFactory->create();
-        file_put_contents("var/log/coldev.log", "test 1\n", FILE_APPEND);
         $quote = $this->quoteCollectionFactory->create()->addFieldToFilter(
             "reserved_order_id",
             $this->request->getParam('OrderNo')
         )->getFirstItem();
-        file_put_contents("var/log/coldev.log", "test 2\n", FILE_APPEND);
         $order = $this->orderInterface->loadByIncrementId($this->request->getParam('OrderNo'));
-        file_put_contents("var/log/coldev.log", "test 3\n", FILE_APPEND);
+        
         $response = $this->getResp($quote->getData('collector_private_id'), $quote->getData('collector_btype'));
-        file_put_contents("var/log/coldev.log", "test 4\n", FILE_APPEND);
+        $quote->setPaymentMethod($this->getPaymentMethodByName($response['data']['purchase']['paymentName'])); //payment method
+        $quote->getPayment()->importData(['method' => $this->getPaymentMethodByName($response['data']['purchase']['paymentName'])]);
+        $fee = 0;
+        if ($this->getPaymentMethodByName($response['data']['purchase']['paymentName']) == 'collector_invoice'){
+            if ($response['data']['customerType'] == "PrivateCustomer"){
+                $fee = $this->apiRequest->convert($this->collectorConfig->getInvoiceB2CFee(), null, 'SEK');
+            }
+            else {
+                $fee = $this->apiRequest->convert($this->collectorConfig->getInvoiceB2BFee(), null, 'SEK');
+            }
+        }
+        $quote->setFeeAmount($fee);
+        $quote->setBaseFeeAmount($fee);
+        $quote->save();
+
+        $order->setFeeAmount($fee);
+        $order->setBaseFeeAmount($fee);
+        $order->setGrandTotal($order->getGrandTotal() + $fee);
+        $order->setBaseGrandTotal($order->getBaseGrandTotal() + $fee);
         
         $this->setOrderStatusState($order, $response["data"]["purchase"]["result"]);
-        file_put_contents("var/log/coldev.log", "test 5\n", FILE_APPEND);
         $order->getPayment()->setMethod($this->getPaymentMethodByName($response['data']['purchase']['paymentName']));
-        file_put_contents("var/log/coldev.log", "test 6\n", FILE_APPEND);
         $order->getPayment()->save();
-        file_put_contents("var/log/coldev.log", "test 7\n", FILE_APPEND);
         $order->setCollectorInvoiceId($response['data']['purchase']['purchaseIdentifier']);
-        file_put_contents("var/log/coldev.log", "test 8\n", FILE_APPEND);
-        
+
         if ($quote->getData('collector_btype') == \Collector\Base\Model\Session::B2B) {
-        file_put_contents("var/log/coldev.log", "test 9\n", FILE_APPEND);
             $order->setCollectorSsn($response['data']['businessCustomer']['organizationNumber']);
-        file_put_contents("var/log/coldev.log", "test 10\n", FILE_APPEND);
         }
-        file_put_contents("var/log/coldev.log", "test 11\n", FILE_APPEND);
         
         $payment = $order->getPayment();
-        file_put_contents("var/log/coldev.log", "test 12\n", FILE_APPEND);
         $payment->setLastTransId($response['data']['purchase']['purchaseIdentifier']);
-        file_put_contents("var/log/coldev.log", "test 13\n", FILE_APPEND);
         $payment->setTransactionId($response['data']['purchase']['purchaseIdentifier']);
-        file_put_contents("var/log/coldev.log", "test 14\n", FILE_APPEND);
         $payment->setAdditionalInformation(
             [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $response['data']['purchase']]
         );
-        file_put_contents("var/log/coldev.log", "test 15\n", FILE_APPEND);
         $formatedPrice = $order->getBaseCurrency()->formatTxt(
             $order->getGrandTotal()
         );
-        file_put_contents("var/log/coldev.log", "test 16\n", FILE_APPEND);
-        
-        $message = __('The authorized amount is %1.', $formatedPrice);
-        file_put_contents("var/log/coldev.log", "test 17\n", FILE_APPEND);
-        //get the object of builder class
-        $trans = $this->transactionBuilder;
-        $transaction = $trans->setPayment($payment)
-        ->setOrder($order)
-        ->setTransactionId($response['data']['purchase']['purchaseIdentifier'])
-        ->setAdditionalInformation(
-            [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $response['data']['purchase']]
-        )
-        ->setFailSafe(true)
-        //build method creates the transaction and returns the object
-        ->build(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH);
-        
-        $payment->addTransactionCommentsToOrder(
-            $transaction,
-            $message
-        );
-        $payment->setParentTransactionId(null);
         $payment->save();
         
-        
         $order->save();
+        
+        
         $this->orderSender->send($order);
-                    ob_start();
-var_dump($quote->getData('collector_btype'));
-var_dump($quote->getData('collector_public_token'));
-file_put_contents("var/log/coldev.log", "dump 4 ".ob_get_clean()."\n", FILE_APPEND);
         return $resultPage;
     }
     

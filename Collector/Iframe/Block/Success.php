@@ -135,16 +135,10 @@ class Success extends \Magento\Checkout\Block\Onepage
     
     public function getCheckoutUrl()
     {
-        if ($this->collectorConfig->getTestMode()) {
-           return "https://checkout-uat.collector.se/collector-checkout-loader.js";
-        } else {
-            return "https://checkout.collector.se/collector-checkout-loader.js";
-        }
-        return $this->collectorSession->getCollectorUrl('');
+        return $this->collectorConfig->getCheckoutUrl();
     }
     
     public function clearSession(){
-        file_put_contents("var/log/coldev.log", "clear session\n", FILE_APPEND);
         $this->checkoutSession->clearStorage();
         $this->checkoutSession->clearQuote();
         $this->collectorSession->unsCollectorPublicToken();

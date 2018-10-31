@@ -83,12 +83,7 @@ class Checkout extends \Magento\Checkout\Block\Onepage
 
     public function getCheckoutUrl()
     {
-        if ($this->collectorConfig->getTestMode()) {
-            $this->collectorSession->setCollectorUrl("https://checkout-uat.collector.se/collector-checkout-loader.js");
-        } else {
-            $this->collectorSession->setCollectorUrl("https://checkout.collector.se/collector-checkout-loader.js");
-        }
-        return $this->collectorSession->getCollectorUrl('');
+        return $this->collectorConfig->getCheckoutUrl();
     }
 
     public function getLanguage()

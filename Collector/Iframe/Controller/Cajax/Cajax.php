@@ -324,6 +324,9 @@ class Cajax extends \Magento\Framework\App\Action\Action
                 case "btype":
                     $this->collectionSession->setBtype($this->getRequest()->getParam('value'));
                     $this->collectionSession->setCollectorPublicToken('');
+                    $this->cart->getQuote()->setData('collector_private_id', null);
+                    $this->cart->getQuote()->setData('collector_public_token', null);
+                    $this->cart->getQuote()->setData('collector_btype', null);
                     $changeLanguage = true;
                     $changed = true;
                     break;

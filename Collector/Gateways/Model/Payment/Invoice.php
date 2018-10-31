@@ -104,6 +104,14 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
             $data
         );
     }
+    
+    public function isGateway(){
+        return true;
+    }
+    
+    public function canCapture(){
+        return true;
+    }
 
     public function getTitle()
     {
@@ -117,14 +125,13 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         $order = $payment->getOrder();
         $quote = $order->getQuote();
         $isIframe = false;
-        if (!empty($this->collectorSession->getIsIframe(''))) {
+        if (!empty($this->collectorSession->getIsIframe()) || is_null($order->getId())) {
             $isIframe = true;
             $payment->setShouldCloseParentTransaction(false);
             $payment->setIsTransactionClosed(false);
             $transaction = $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_AUTH);
             $payment->addTransactionCommentsToOrder($transaction, "testing");
         }
-
 
         if (!$isIframe) {
             $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
