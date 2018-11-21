@@ -44,10 +44,10 @@
             <collector_trustly>
                 <payment_action>authorize</payment_action>
 				<active>1</active>
-                <title>Collector Bank</title>
-				<model>Collector\Iframe\Model\Payment\Bank</model>
+                <title>Collector Trustly</title>
+				<model>Collector\Iframe\Model\Payment\Trustly</model>
 				<order_status>pending</order_status>
-				<title>Bank</title>
+				<title>Trustly</title>
 				<is_gateway>1</is_gateway>
                 <can_order>1</can_order>
                 <can_capture>1</can_capture>

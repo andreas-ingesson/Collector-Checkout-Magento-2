@@ -106,7 +106,6 @@ class Checkout extends \Magento\Checkout\Block\Onepage
             $dataVariant = ' data-variant="b2b" async';
         }
         $this->collectorSession->setCollectorDataVariant($dataVariant);
-        $this->cart->getQuote()->setData('collector_btype', $dataVariant);
         $this->cart->getQuote()->save();
         return $dataVariant;
     }

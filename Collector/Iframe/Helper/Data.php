@@ -86,9 +86,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         'DE'
     ];
     /**
+     * @var 
+     */
+    protected $quoteRepository;
+    
+    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
+    
+    /**
+     * @var \Magento\Framework\Escaper
+     */
+    protected $escaper;
+    
+    /**
+     * @var \Magento\SalesRule\Model\CouponFactory
+     */
+    protected $couponFactory;
+    
 
     /**
      * Data constructor.
@@ -109,6 +125,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Checkout\Helper\Data $checkoutHelper
      * @param \Magento\Framework\Message\ManagerInterface $_messageManager
      * @param \Collector\Base\Model\Config $collectorConfig
+     * @param \Magento\Quote\Api\CartRepositoryInterface $_quoteRepository
+     * @param \Magento\Framework\Escaper $_escaper
+     * @param \Magento\SalesRule\Model\CouponFactory $_couponFactory
      * @param \Collector\Base\Helper\Prices $collectorPriceHelper
      */
     public function __construct(
@@ -129,6 +148,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Checkout\Helper\Data $checkoutHelper,
         \Magento\Framework\Message\ManagerInterface $_messageManager,
         \Collector\Base\Model\Config $collectorConfig,
+        \Magento\Quote\Api\CartRepositoryInterface $_quoteRepository,
+        \Magento\Framework\Escaper $_escaper,
+        \Magento\SalesRule\Model\CouponFactory $_couponFactory,
         \Collector\Base\Helper\Prices $collectorPriceHelper
     ) {
         //ugly hack to remove compilation errors in Magento 2.1.x
@@ -153,6 +175,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->messageManager = $_messageManager;
         $this->storeManager = $_storeManager;
         $this->coupon = $_coupon;
+        $this->couponFactory = $_couponFactory;
+        $this->escaper = $_escaper;
+        $this->quoteRepository = $_quoteRepository;
         return parent::__construct($context);
     }
 
@@ -254,15 +279,50 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function setDiscountCode($code)
     {
-        $ruleId = $this->coupon->loadByCode($code)->getRuleId();
-        if (!empty($ruleId)) {
-            $this->checkoutSession->getQuote()->setCouponCode($code)->collectTotals()->save();
-            $this->collectorSession->setCollectorAppliedDiscountCode($code);
-            $this->cart->getQuote()->setData('collector_applied_discount_code', $code);
-            $this->cart->getQuote()->save();
-            return array('message'=>__('You used coupon code "%1".', $code), 'error'=>false);
-        } else {
-            return array('message'=>__('The coupon code "%1" is not valid.', $code), 'error'=>false);
+        $couponCode = $code;
+
+        $cartQuote = $this->cart->getQuote();
+        $codeLength = strlen($couponCode);
+        try {
+            $isCodeLengthValid = $codeLength && $codeLength <= \Magento\Checkout\Helper\Cart::COUPON_CODE_MAX_LENGTH;
+
+            $itemsCount = $cartQuote->getItemsCount();
+            if ($itemsCount) {
+                $cartQuote->getShippingAddress()->setCollectShippingRates(true);
+                $cartQuote->setCouponCode($isCodeLengthValid ? $couponCode : '')->collectTotals();
+                $this->quoteRepository->save($cartQuote);
+            }
+
+            if ($codeLength) {
+                $escaper = $this->escaper;
+                $coupon = $this->couponFactory->create();
+                $coupon->load($couponCode, 'code');
+                if (!$itemsCount) {
+                    if ($isCodeLengthValid && $coupon->getId()) {
+                        $this->checkoutSession->getQuote()->setCouponCode($code)->collectTotals()->save();
+                        $this->collectorSession->setCollectorAppliedDiscountCode($code);
+                        $this->cart->getQuote()->setData('collector_applied_discount_code', $code);
+                        $this->cart->getQuote()->save();
+                        return array('message'=>__('You used coupon code "%1".', $escaper->escapeHtml($couponCode)), 'error'=>false);
+                    } else {
+                        return array('message'=>__('The coupon code "%1" is not valid.', $escaper->escapeHtml($couponCode)), 'error'=>false);
+                    }
+                } else {
+                    if ($isCodeLengthValid && $coupon->getId() && $couponCode == $cartQuote->getCouponCode()) {
+                        return array('message'=>__('You used coupon code "%1".', $escaper->escapeHtml($couponCode)), 'error'=>false);
+                    } else {
+                        return array('message'=>__('The coupon code "%1" is not valid.', $escaper->escapeHtml($couponCode)), 'error'=>false);
+                    }
+                }
+            } else {
+                $this->messageManager->addSuccess(__('You canceled the coupon code.'));
+            }
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            return array('message'=>$e->getMessage(), 'error'=>true);
+            $this->messageManager->addError($e->getMessage());
+        } catch (\Exception $e) {
+            return array('message'=>$e->getMessage(), 'error'=>true);
+            return array('message'=>__('We cannot apply the coupon code.'), 'error'=>true);
         }
     }
 	

@@ -2,7 +2,12 @@
 $quote = $block->getQuote();
 $url = $block->getCheckoutUrl();
 $dataLang = $block->getLanguage();
-$dataVariant = $quote->getData('collector_btype');
+if ($quote->getData('collector_btype') == \Collector\Base\Model\Session::B2B){
+    $dataVariant = ' data-variant="b2b" async';
+}
+else {
+    $dataVariant = ' async';
+}
 $publicToken = $quote->getData('collector_public_token');
 ?>
 
