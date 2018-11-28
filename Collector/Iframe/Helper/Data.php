@@ -403,33 +403,39 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                 }
             }
-            array_push(
-                $items,
-                array(
-                    'name' => $cartItem->getName(),
-                    'options' => $options,
-                    'id' => $cartItem->getId(),
+            
+            $item = array(
+                'name' => $cartItem->getName(),
+                'options' => $options,
+                'id' => $cartItem->getId(),
 
-                    'unitPrice' =>
-                        $this->checkoutHelper->formatPrice(
-                            $this->scopeConfig->getValue('tax/cart_display/price') == 1 ?
-                                $cartItem->getPrice() :
-                                $cartItem->getPriceInclTax()
-                        ),
-                    'qty' => $cartItem->getQty(),
-                    'sum' => $this->pricingHelper->currency(
+                'unitPrice' =>
+                    $this->checkoutHelper->formatPrice(
                         $this->scopeConfig->getValue('tax/cart_display/price') == 1 ?
-                            $cartItem->getRowTotal() :
-                            $cartItem->getRowTotalInclTax(),
-                        true,
-                        false
+                            $cartItem->getPrice() :
+                            $cartItem->getPriceInclTax()
                     ),
-                    'img' => $this->imageHelper->init(
-                        $product,
-                        'product_page_image_small'
-                    )->setImageFile($product->getFile())->resize(80, 80)->getUrl()
-                )
+                'qty' => $cartItem->getQty(),
+                'sum' => $this->pricingHelper->currency(
+                    $this->scopeConfig->getValue('tax/cart_display/price') == 1 ?
+                        $cartItem->getRowTotal() :
+                        $cartItem->getRowTotalInclTax(),
+                    true,
+                    false
+                ),
+                'img' => $this->imageHelper->init(
+                    $product,
+                    'product_page_image_small'
+                )->setImageFile($product->getFile())->resize(80, 80)->getUrl()
             );
+            if ($this->scopeConfig->getValue('tax/cart_display/price') == 3){
+                $item['sum'] .= "<br><span style=\"font-size: 10px;\">" . 
+                $this->pricingHelper->currency($cartItem->getRowTotal(), true, false) .
+                "&nbsp" .
+                __('Excl. Tax') .
+                "</span>";
+            }
+            array_push($items, $item);
         }
         return $items;
     }

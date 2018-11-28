@@ -58,6 +58,15 @@ class Success extends \Magento\Checkout\Block\Onepage
     protected $request;
     
     /**
+     * @var \Magento\Framework\App\Response\Http
+     */
+    protected $response;
+    /**
+     * @var \Magento\Sales\Api\Data\OrderInterface
+     */
+    protected $orderInterface;
+    
+    /**
      * Success constructor.
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\App\Request\Http $request
@@ -80,18 +89,24 @@ class Success extends \Magento\Checkout\Block\Onepage
         \Magento\Framework\App\Request\Http $request,
         \Magento\Quote\Model\Quote\Address\Rate $shippingRate,
         \Magento\Framework\Data\Form\FormKey $formKey,
+        \Magento\Sales\Api\Data\OrderInterface $_orderInterface,
         \Magento\Checkout\Model\CompositeConfigProvider $configProvider,
         \Collector\Iframe\Helper\Data $_helper,
         \Magento\Checkout\Model\Cart $_cart,
         \Collector\Base\Model\Config $collectorConfig,
         \Collector\Base\Logger\Collector $logger,
         \Collector\Base\Model\Session $_collectorSession,
+        \Magento\Framework\App\Response\Http $response,
         \Magento\Checkout\Model\Session $_checkoutSession,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $_quoteCollectionFactory,
         \Magento\Customer\Model\Session $customerSession,
         array $data = [],
         array $layoutProcessors = []
     ) {
+        //ugly hack to remove compilation errors in Magento 2.1.x
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->redirect = $objectManager->get('\Magento\Framework\App\Response\RedirectInterface');
+        //end of hack
         parent::__construct($context, $formKey, $configProvider, $layoutProcessors, $data);
         $this->collectorSession = $_collectorSession;
         $this->logger = $logger;
@@ -99,10 +114,12 @@ class Success extends \Magento\Checkout\Block\Onepage
         $this->checkoutSession = $_checkoutSession;
         $this->request = $request;
         $this->collectorConfig = $collectorConfig;
+        $this->response = $response;
         $this->shippingRate = $shippingRate;
         $this->customerSession = $customerSession;
         $this->quoteCollectionFactory = $_quoteCollectionFactory;
         $this->cart = $_cart;
+        $this->orderInterface = $_orderInterface;
         $this->storeManager = $context->getStoreManager();
     }
 
@@ -126,6 +143,7 @@ class Success extends \Magento\Checkout\Block\Onepage
     }
     
     public function getQuote(){
+        
         $quote = $this->quoteCollectionFactory->create()->addFieldToFilter(
             "reserved_order_id",
             $this->request->getParam('OrderNo')

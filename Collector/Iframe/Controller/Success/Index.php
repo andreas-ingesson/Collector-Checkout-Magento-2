@@ -137,6 +137,11 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Checkout\Model\Cart
      */
     protected $cart;
+    
+    /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    protected $request;
 	
     /**
      * Index constructor.
@@ -180,6 +185,7 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Session $_checkoutSession,
         \Magento\Customer\Model\CustomerFactory $_customerFactory,
         \Magento\Quote\Model\QuoteManagement $quoteManagement,
+        \Magento\Framework\App\Request\Http $request,
         \Magento\Sales\Api\Data\OrderInterface $_orderInterface,
         \Collector\Base\Logger\Collector $logger,
         \Collector\Iframe\Model\ResourceModel\Fraud\Collection $fraudCollection,
@@ -205,6 +211,7 @@ class Index extends \Magento\Framework\App\Action\Action
 		$this->transactionBuilder = $transactionBuilder;
         $this->cart = $cart;
 		$this->addressRepository = $_addressRepository;
+        $this->request = $request;
         $this->fraudCollection = $fraudCollection;
         $this->customerSession = $customerSession;
         $this->addressFactory = $addressFactory;
@@ -237,14 +244,18 @@ class Index extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-        $order = $this->orderInterface->loadByIncrementId($this->customerSession->getCollectorIncrementId());
-        
+        $order = $this->orderInterface->loadByIncrementId($this->request->getParam('OrderNo'));
+        if ($order->getData('shown_success_page') == 1){
+            return $this->redirect->redirect($this->response, '/');
+        }
         $this->eventManager->dispatch(
             'checkout_onepage_controller_success_action',
             ['order_ids' => [$order->getId()]]
         );
         $this->checkoutSession->setLastOrderId($order->getId());
         $resultPage = $this->resultPageFactory->create();
+        $order->setData('shown_success_page', 1);
+        $order->save();
         return $resultPage;
     }
 }

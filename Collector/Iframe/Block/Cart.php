@@ -233,6 +233,23 @@ class Cart extends \Magento\Checkout\Block\Onepage
 
     public function getTotals()
     {
+        $this->getQuoteTotals();
         return $this->collectorPriceHelper->getQuoteTotalsArray($this->checkoutSession->getQuote(), false);
+    }
+    
+    public function getSubtotalExclTax()
+    {
+        return $this->getQuoteTotals()['subtotal'];
+    }
+    
+    public function getShippingExclTax()
+    {
+        $totals = $this->getQuoteTotals();
+        return $totals['shipping_amount'] - $totals['shipping_tax_amount'];
+    }
+    
+    protected function getQuoteTotals()
+    {
+        return $this->checkoutSession->getQuote()->getShippingAddress()->getData();
     }
 }

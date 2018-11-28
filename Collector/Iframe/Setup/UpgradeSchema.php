@@ -151,6 +151,25 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $connection->addColumn($table, $name, $definition);
             }
         }
+        
+        if (version_compare($context->getVersion(), '2.0.0') < 0) {
+            $table = $setup->getTable('quote');
+            
+            $columns = [
+                'shown_success_page' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'length' => '255',
+                    'nullable' => true,
+                    'default' => 0,
+                    'comment' => 'Collector has shown success page',
+                ],
+            ];
+
+            $connection = $setup->getConnection();
+            foreach ($columns as $name => $definition) {
+                $connection->addColumn($table, $name, $definition);
+            }
+        }
         $setup->endSetup();
     }
 }
