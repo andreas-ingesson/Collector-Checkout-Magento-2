@@ -1,3 +1,4 @@
+<?php if ($this->isCollectorOrder()): ?>
 <div class="info">
     <div class="logo">
         <img src="<?php echo \Magento\Framework\App\ObjectManager::getInstance()->get('\Magento\Framework\View\Asset\Repository')->getUrl("Collector_Gateways::images/black.png") ?>"
@@ -7,3 +8,4 @@
         <p><?php echo __('Collector Invoice ID: ') . $this->getInvoiceId() ?></p>
     </div>
 </div>
+<?php endif; ?>

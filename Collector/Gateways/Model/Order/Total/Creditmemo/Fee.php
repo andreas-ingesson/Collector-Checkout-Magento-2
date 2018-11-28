@@ -7,11 +7,29 @@ use Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal;
 class Fee extends AbstractTotal
 {
     /**
+     * @var \Collector\Base\Model\Config
+     */
+    protected $collectorConfig;
+
+    /**
+     * Fee constructor.
+     * @param \Collector\Base\Model\Config $collectorConfig
+     */
+    public function __construct(
+        \Collector\Base\Model\Config $collectorConfig
+    ) {
+        $this->collectorConfig = $collectorConfig;
+    }
+    
+    /**
      * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
      * @return $this
      */
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
+        if (!$this->collectorConfig->getEnable()){
+            return $this;
+        }
         $order = $creditmemo->getOrder();
         if ($order->getFeeAmountInvoiced() > 0) {
             $feeAmountLeft = $order->getFeeAmountInvoiced() - $order->getFeeAmountRefunded();

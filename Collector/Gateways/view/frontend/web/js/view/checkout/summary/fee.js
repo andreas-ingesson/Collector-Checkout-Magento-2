@@ -25,17 +25,27 @@ define(
             },
             getValue: function () {
                 var price = 0;
-                if (this.totals()) {
-                    if (totals2.getSegment('fee')) {
-                        price = totals2.getSegment('fee').value;
+                try {
+                    if (this.totals()) {
+                        if (totals2.getSegment('fee')) {
+                            price = totals2.getSegment('fee').value;
+                        }
                     }
+                }
+                catch (err){
+                    price = 0;
                 }
                 return this.getFormattedPrice(price);
             },
             getBaseValue: function () {
                 var price = 0;
-                if (this.totals()) {
-                    price = this.totals().base_fee;
+                try {
+                    if (this.totals()) {
+                        price = this.totals().base_fee;
+                    }
+                }
+                catch (err){
+                    price = 0;
                 }
                 return priceUtils.formatPrice(price, quote.getBasePriceFormat());
             }
