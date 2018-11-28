@@ -24,4 +24,7 @@ namespace Collector\Iframe\Model\Payment;
 class Bank extends \Collector\Iframe\Model\Payment\BasePayment
 {
     protected $_code = "collector_bank";
+    protected $_isGateway = true;
+    protected $_canCapture = true;
+    protected $_canCapturePartial = true;
 }

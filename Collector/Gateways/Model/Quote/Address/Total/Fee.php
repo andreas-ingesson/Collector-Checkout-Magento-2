@@ -65,6 +65,9 @@ class Fee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
+        if (!$this->collectorConfig->getEnable()){
+            return [];
+        }
         $checkout = strpos($this->urlInterface->getCurrentUrl(), 'collectorcheckout') !== false
             && strpos($this->urlInterface->getCurrentUrl(), 'success') == false;
         $result = [

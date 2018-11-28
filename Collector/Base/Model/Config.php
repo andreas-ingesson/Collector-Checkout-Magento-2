@@ -59,6 +59,11 @@ class Config
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
+    
+    public function getPendingStatus()
+    {
+        return 'collector_pending';
+    }
 
     public function getHoldStatus()
     {
@@ -412,5 +417,14 @@ class Config
             'collector_collectorcheckout/general/create_account',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+    }
+    
+    public function getCheckoutUrl()
+    {
+        if ($this->getTestMode()) {
+            return "https://checkout-uat.collector.se/collector-checkout-loader.js";
+        } else {
+            return "https://checkout.collector.se/collector-checkout-loader.js";
+        }
     }
 }

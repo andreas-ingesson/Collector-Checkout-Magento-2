@@ -1,10 +1,14 @@
 <?php
-$collectorSession = $block->getCollectorSession();
-$url = $collectorSession->getCollectorUrl('');
-$dataLang = $collectorSession->getCollectorLanguage('');
-$dataVariant = $collectorSession->getCollectorDataVariant('');
-$publicToken = $collectorSession->getCollectorPublicToken('');
-$collectorSession->setCollectorPublicToken('');
+$quote = $block->getQuote();
+$url = $block->getCheckoutUrl();
+$dataLang = $block->getLanguage();
+if ($quote->getData('collector_btype') == \Collector\Base\Model\Session::B2B){
+    $dataVariant = ' data-variant="b2b" async';
+}
+else {
+    $dataVariant = ' async';
+}
+$publicToken = $quote->getData('collector_public_token');
 ?>
 
 <script>
@@ -19,7 +23,6 @@ $collectorSession->setCollectorPublicToken('');
     <script src="<?php echo $url; ?>" data-token="<?php echo $publicToken; ?>"
             data-lang='<?php echo $dataLang; ?>' <?php echo $dataVariant; ?>></script>
 </div>
-
 <?php
-    $this->clearSession();
+$this->clearSession();
 ?>

@@ -23,6 +23,22 @@
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 				</field>
 			</group>
+            <group id="collector_trustly" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+				<label>Collector Trustly</label>
+				<field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="select">
+					<label>Enabled</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Do not disable, Collector checkout will be unable to create orders if this is disabled</comment>
+				</field>
+			</group>
+            <group id="collector_base" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+				<label>Collector base</label>
+				<field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="select">
+					<label>Enabled</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Do not disable, Collector checkout will be unable to create orders if this is disabled</comment>
+				</field>
+			</group>
 		</section>
 	</system>
 </config>

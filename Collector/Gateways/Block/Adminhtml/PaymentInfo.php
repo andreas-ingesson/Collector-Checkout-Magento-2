@@ -15,4 +15,9 @@ class PaymentInfo extends \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info
     {
         return $this->getOrder()->getData('collector_invoice_id');
     }
+    
+    public function isCollectorOrder()
+    {
+        return strpos($this->getOrder()->getPaymentMethod(), 'collector') !== false;
+    }
 }

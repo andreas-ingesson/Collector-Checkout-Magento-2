@@ -47,6 +47,9 @@ class AcceptStatus implements \Magento\Framework\Option\ArrayInterface
         if (count($this->statusArray) == 0) {
             $statusLabels = $this->statusCollection->toOptionHash();
             foreach ($this->statusToStateCollection as $item) {
+                if ($item->getStatus() == 'collector_pending'){
+                    continue;
+                }
                 $this->statusArray[$item->getStatus()] = __($statusLabels[$item->getStatus()]);
             }
         }

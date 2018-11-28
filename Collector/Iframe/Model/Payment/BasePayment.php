@@ -108,7 +108,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
             $data
         );
     }
-
+    
     private function getB2BrB2CStoreId(&$order)
     {
         if ($order->getBillingAddress()->getCompany()) {
@@ -154,11 +154,13 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         $paymentInfo = $info->getAdditionalInformation();
         $order = $payment->getOrder();
         $quote = $order->getQuote();
+        
         $isIframe = false;
-        if (!empty($this->collectorSession->getIsIframe())) {
+        if (!empty($this->collectorSession->getIsIframe()) || is_null($order->getId())) {
             $isIframe = true;
             $payment->setIsTransactionClosed(false);
         }
+        $order->setCanSendNewEmailFlag(false);
         if (!$isIframe) {
             $storeID = $this->getB2BrB2CStoreId($order);
             $req = array(

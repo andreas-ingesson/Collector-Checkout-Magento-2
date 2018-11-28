@@ -24,5 +24,8 @@ namespace Collector\Iframe\Model\Payment;
 class Campaign extends \Collector\Iframe\Model\Payment\BasePayment
 {
 
-    protected $_code = "campaign";
+    protected $_code = "collector_campaign";
+    protected $_isGateway = true;
+    protected $_canCapture = true;
+    protected $_canCapturePartial = true;
 }

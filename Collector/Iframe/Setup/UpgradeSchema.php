@@ -103,6 +103,54 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ->setOption('charset', 'utf8');
             $setup->getConnection()->createTable($table);
         }
+        
+        if (version_compare($context->getVersion(), '1.2.0') < 0) {
+            $table = $setup->getTable('quote');
+            $columns = [
+                'collector_public_token' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => '255',
+                    'nullable' => true,
+                    'comment' => 'Collector Public Token',
+                ],
+                'newsletter_signup' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'length' => '255',
+                    'nullable' => false,
+                    'default' => 0,
+                    'comment' => 'Collector Newsletter Signup',
+                ],
+                'is_iframe' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'length' => '255',
+                    'nullable' => false,
+                    'default' => 0,
+                    'comment' => 'Collector Is Iframe',
+                ],
+            ];
+
+            $connection = $setup->getConnection();
+            foreach ($columns as $name => $definition) {
+                $connection->addColumn($table, $name, $definition);
+            }
+            
+            $table = $setup->getTable('sales_order');
+            
+            $columns = [
+                'is_iframe' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'length' => '255',
+                    'nullable' => false,
+                    'default' => 0,
+                    'comment' => 'Collector Is Iframe',
+                ],
+            ];
+
+            $connection = $setup->getConnection();
+            foreach ($columns as $name => $definition) {
+                $connection->addColumn($table, $name, $definition);
+            }
+        }
         $setup->endSetup();
     }
 }

@@ -41,6 +41,31 @@
                 <can_refund>1</can_refund>
 				<group>collector</group>
 			</collector_bank>
+            <collector_trustly>
+                <payment_action>authorize</payment_action>
+				<active>1</active>
+                <title>Collector Trustly</title>
+				<model>Collector\Iframe\Model\Payment\Trustly</model>
+				<order_status>pending</order_status>
+				<title>Trustly</title>
+				<is_gateway>1</is_gateway>
+                <can_order>1</can_order>
+                <can_capture>1</can_capture>
+                <can_refund>1</can_refund>
+				<group>collector</group>
+			</collector_trustly>
+            <collector_base>
+				<title>Collector Checkout - Unknown</title>
+				<active>1</active>
+				<model>Collector\Iframe\Model\Payment\BasePayment</model>
+                <can_order>1</can_order>
+				<is_gateway>1</is_gateway>
+                <can_capture>1</can_capture>
+                <can_refund>1</can_refund>
+				<group>collector</group>
+                <payment_action>authorize</payment_action>
+				<order_status>collector_pending</order_status>
+            </collector_base>
 		</payment>
 	</default>
 </config>

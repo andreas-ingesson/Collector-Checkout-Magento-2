@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<collector_collectorcheckout>
+            <version>
+                <base>1.1.0</base>
+                <gateways>1.1.0</gateways>
+                <iframe>1.2.0</iframe>
+            </version>
+        </collector_collectorcheckout>
+	</default>
+</config>

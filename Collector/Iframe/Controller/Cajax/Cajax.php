@@ -294,6 +294,12 @@ class Cajax extends \Magento\Framework\App\Action\Action
                     break;
                 case "newsletter":
                     $this->collectionSession->setNewsletterSignup($this->getRequest()->getParam('value') == "true");
+                    if ($this->getRequest()->getParam('value')){
+                        $this->cart->getQuote()->setData('newsletter_signup', 1);
+                    }
+                    else {
+                        $this->cart->getQuote()->setData('newsletter_signup', 0);
+                    }
                     break;
                 case "del":
                     $allItems = $this->cart->getQuote()->getAllVisibleItems();
@@ -318,6 +324,9 @@ class Cajax extends \Magento\Framework\App\Action\Action
                 case "btype":
                     $this->collectionSession->setBtype($this->getRequest()->getParam('value'));
                     $this->collectionSession->setCollectorPublicToken('');
+                    $this->cart->getQuote()->setData('collector_private_id', null);
+                    $this->cart->getQuote()->setData('collector_public_token', null);
+                    $this->cart->getQuote()->setData('collector_btype', null);
                     $changeLanguage = true;
                     $changed = true;
                     break;

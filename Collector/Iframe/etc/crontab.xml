@@ -4,5 +4,8 @@
         <job name="collector_checker" instance="Collector\Iframe\Cron\Checker" method="execute">
             <schedule>*/15 * * * *</schedule>
         </job>
+        <job name="collector_removeorders" instance="Collector\Iframe\Cron\RemoveOrders" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
     </group>
 </config>

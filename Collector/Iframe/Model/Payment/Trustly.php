@@ -21,9 +21,9 @@
 
 namespace Collector\Iframe\Model\Payment;
 
-class Card extends \Collector\Iframe\Model\Payment\BasePayment
+class Trustly extends \Collector\Iframe\Model\Payment\BasePayment
 {
-    protected $_code = "collector_card";
+    protected $_code = "collector_trustly";
     protected $_isGateway = true;
     protected $_canCapture = true;
     protected $_canCapturePartial = true;
