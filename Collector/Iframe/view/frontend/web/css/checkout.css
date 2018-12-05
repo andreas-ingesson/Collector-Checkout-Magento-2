@@ -113,11 +113,6 @@ h1 {
     font-weight: 700;
 }
 
-div.checkout {
-    width: 100%;
-    float: right;
-}
-
 div.column.main {
     display: none;
 }
@@ -182,10 +177,6 @@ button.col-sub {
         margin-left: 10px;
         align-self: center;
     }
-}
-
-div.checkout {
-    margin-top: 1000px !important;
 }
 
 .collector-cart-table tr {
