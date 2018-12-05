@@ -249,10 +249,10 @@ class Index extends \Magento\Framework\App\Action\Action
             }
             $response = $this->getResp($quote->getData('collector_private_id'), $quote->getData('collector_btype'));
             if ($response["code"] == 0) {
-                $this->collectorLogger->error($response['error']);
+                $this->collectorLogger->error($response['error']['message']);
                 $return = array(
                     'title' => "Could not place Order",
-                    'message' => $response['error']
+                    'message' => $response['error']['message']
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
