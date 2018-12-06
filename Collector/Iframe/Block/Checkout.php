@@ -113,7 +113,7 @@ class Checkout extends \Magento\Checkout\Block\Onepage
     public function getPublicToken()
     {
         $this->customerSession->setCollectorIncrementId($this->cart->getQuote()->getReservedOrderId());
-        if (!empty($this->cart->getQuote()->getData('collector_private_id'))) {
+        if (!empty($this->collectorSession->getCollectorPublicToken())) {
             $this->helper->updateCart();
             $this->helper->updateFees();
             return $this->collectorSession->getCollectorPublicToken();
