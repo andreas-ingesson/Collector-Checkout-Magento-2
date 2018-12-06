@@ -260,16 +260,24 @@ class Cajax extends \Magento\Framework\App\Action\Action
                     $id = explode('_', $this->getRequest()->getParam('id'))[1];
                     foreach ($allItems as $item) {
                         if ($item->getId() == $id) {
-							$product = $this->productRepository->get($item->getSku());
-                            if ($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) {
-                                $item->setQty($item->getQty() + 1);
+                            if ($item->getProductType() == 'bundle'){
+                                $this->cart->updateItems([$item->getId() => ['qty' => $item->getQty()+1]]);
                                 $changed = true;
                                 $updateCart = true;
                                 $updateFees = true;
-                            } else {
-                                $this->messageManager->addError(
-                                    __('We don\'t have as many "%1" as you requested.', $item->getName())
-                                );
+                            }
+                            else {
+                                $product = $this->productRepository->get($item->getSku());
+                                if ($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) {
+                                    $item->setQty($item->getQty() + 1);
+                                    $changed = true;
+                                    $updateCart = true;
+                                    $updateFees = true;
+                                } else {
+                                    $this->messageManager->addError(
+                                        __('We don\'t have as many "%1" as you requested.', $item->getName())
+                                    );
+                                }
                             }
                         }
                     }
