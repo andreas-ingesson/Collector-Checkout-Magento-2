@@ -37,3 +37,9 @@ All of these are in Stores -> Configuration
 
 
 ## Known Issues
+
+
+## Version 2.0
+### Changed the checkout flow
+The new checkout flow requires that the callbacks arrive. 
+Meaning if firewalls, .htaccess locks and other things which prevents users from directly accessing the site will cause orders not to be created.
