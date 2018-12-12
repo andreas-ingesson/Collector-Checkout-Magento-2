@@ -324,7 +324,9 @@ class Index extends \Magento\Framework\App\Action\Action
                         'company' => $response['data']['businessCustomer']['deliveryAddress']['companyName'],
                         'firstname' => $response['data']['businessCustomer']['firstName'],
                         'lastname' => $response['data']['businessCustomer']['lastName'],
-                        'street' => $response['data']['businessCustomer']['deliveryAddress']['address'],
+                        'street' => !empty($response['data']['businessCustomer']['deliveryAddress']['address']) ?
+                            $response['data']['businessCustomer']['deliveryAddress']['address']
+                            : $response['data']['businessCustomer']['deliveryAddress']['postalCode'],
                         'city' => $response['data']['businessCustomer']['deliveryAddress']['city'],
                         'postcode' => $response['data']['businessCustomer']['deliveryAddress']['postalCode'],
                         'telephone' => $response['data']['businessCustomer']['mobilePhoneNumber'],
@@ -358,7 +360,7 @@ class Index extends \Magento\Framework\App\Action\Action
                     'company' => $response['data']['businessCustomer']['invoiceAddress']['companyName'],
                     'firstname' => $response['data']['businessCustomer']['firstName'],
                     'lastname' => $response['data']['businessCustomer']['lastName'],
-                    'street' => isset($response['data']['businessCustomer']['invoiceAddress']['address']) ?
+                    'street' => !empty($response['data']['businessCustomer']['invoiceAddress']['address']) ?
                         $response['data']['businessCustomer']['invoiceAddress']['address']
                         : $response['data']['businessCustomer']['invoiceAddress']['postalCode'],
                     'city' => $response['data']['businessCustomer']['invoiceAddress']['city'],
@@ -535,6 +537,7 @@ class Index extends \Magento\Framework\App\Action\Action
             $resp = array(
                 'orderReference' => $order->getIncrementId()
             );
+            $quote->setIsActive(1);
             return $resultPage->setData($resp);
         } catch (\Exception $e) {
             $this->collectorLogger->error($e->getMessage());

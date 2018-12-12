@@ -157,7 +157,7 @@ class Index extends \Magento\Framework\App\Action\Action
             $order->getGrandTotal()
         );
         $payment->save();
-        
+        $quote->setIsActive(0);
         $order->save();
         
         
