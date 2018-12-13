@@ -498,7 +498,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     "%01.2f",
                     $this->apiRequest->convert($this->cart->getQuote()->getGrandTotal() - $totals, 'SEK')
                 ),
-                'vat' => '25',
+                'vat' => '0',
             );
             array_push($items, $code);
         }
