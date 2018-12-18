@@ -447,7 +447,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $cartTotals = $this->collectorPriceHelper->getQuoteTotalsArray($this->cart->getQuote(), false);
         $items = [];
         $bundlesWithFixedPrice = [];
-
+        $sum = 0;
         foreach ($this->cart->getQuote()->getAllItems() as $cartItem) {
             if ($cartItem->getProductType() == 'configurable') {
                 continue;
@@ -479,6 +479,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if ($cartItem->getPriceInclTax() == 0) {
                 $price = $cartItem->getParentItem()->getPriceInclTax();
             }
+            $sum += ($price * $qty);
             array_push($items, array(
                 'id' => $cartItem->getSku(),
                 'description' => $cartItem->getName(),
@@ -509,7 +510,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             );
             array_push($items, $code);
         }
-
+        if ($this->cart->getQuote()->getGrandTotal() < ($sum + ($this->cart->getQuote()->getGrandTotal() - $totals))){
+            $rounding = array(
+                'id' => 'rounding',
+                'description' => 'rounding',
+                'quantity' => 1,
+                'unitPrice' => sprintf(
+                    "%01.2f",
+                    $this->apiRequest->convert($this->cart->getQuote()->getGrandTotal() - ($sum + ($this->cart->getQuote()->getGrandTotal() - $totals)), 'SEK')
+                ),
+                'vat' => '0',
+            );
+            array_push($items, $rounding);
+        }
         return $items;
     }
 
