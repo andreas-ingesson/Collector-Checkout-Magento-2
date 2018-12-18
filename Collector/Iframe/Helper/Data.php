@@ -466,8 +466,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $percent = $this->taxCalculation->getRate($request->setProductClassId($taxClassId));
             if ($cartItem->getParentItem() && $cartItem->getQty() == 0) {
                 $qty = $cartItem->getParentItem()->getQty();
-            } else if ($cartItem->getParentItem()->getProductType() == 'bundle') {
-                $qty = $cartItem->getQty() * $cartItem->getParentItem()->getQty();
+            } else if ($cartItem->getParentItem() !== null) {
+                if ($cartItem->getParentItem()->getProductType() == 'bundle') {
+                    $qty = $cartItem->getQty() * $cartItem->getParentItem()->getQty();
+                } else {
+                    $qty = $cartItem->getQty();
+                }
             } else {
                 $qty = $cartItem->getQty();
             }

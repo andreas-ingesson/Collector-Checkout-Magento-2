@@ -110,9 +110,6 @@ class ApiRequest
         $pid = $this->getPID($cart);
         $storeId = $this->collectorConfig->getB2BrB2CStore();
         $path = '/merchants/' . $storeId . '/checkouts/' . $pid . '/cart';
-        ob_start();
-        var_dump($params);
-        file_put_contents("var/log/coldev.log", ob_get_clean() . "\n", FILE_APPEND);
         $json = json_encode($params);
         $hashstr = 'SharedKey ' . $this->collectorConfig->getHash($path, $json);
         $ch = curl_init($this->collectorConfig->getWSDL() . $path);
@@ -134,9 +131,6 @@ class ApiRequest
         $storeId = $this->collectorConfig->getB2BrB2CStore();
         $path = '/merchants/' . $storeId . '/checkouts/' . $pid . '/fees';
         $json = json_encode($params);
-        ob_start();
-        var_dump($params);
-        file_put_contents("var/log/coldev.log", ob_get_clean() . "\n", FILE_APPEND);
         $hashstr = 'SharedKey ' . $this->collectorConfig->getHash($path, $json);
         $ch = curl_init($this->collectorConfig->getWSDL() . $path);
         $this->setCurlPUT($ch);
@@ -155,9 +149,6 @@ class ApiRequest
     {
         $path = '/checkout';
         $json = json_encode($params);
-        ob_start();
-        var_dump($params);
-        file_put_contents("var/log/coldev.log", ob_get_clean() . "\n", FILE_APPEND);
         $hashstr = 'SharedKey ' . $this->collectorConfig->getHash($path, $json);
         $ch = curl_init($this->collectorConfig->getWSDL() . $path);
         $this->setCurlPOST($ch);
