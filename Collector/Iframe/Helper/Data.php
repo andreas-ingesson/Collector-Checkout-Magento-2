@@ -464,8 +464,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $product = $this->productRepository->get($cartItem->getSku());
             $taxClassId = $product->getTaxClassId();
             $percent = $this->taxCalculation->getRate($request->setProductClassId($taxClassId));
-            if ($cartItem->getParentItem()) {
+            if ($cartItem->getParentItem() && $cartItem->getQty() == 0) {
                 $qty = $cartItem->getParentItem()->getQty();
+            } else if ($cartItem->getParentItem()->getProductType() == 'bundle') {
+                $qty = $cartItem->getQty() * $cartItem->getParentItem()->getQty();
             } else {
                 $qty = $cartItem->getQty();
             }
@@ -484,7 +486,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $totals =
             (!empty($cartTotals['subtotal']['value']) ? $cartTotals['subtotal']['value'] : 0)
             + (!empty($cartTotals['fee']['value']) ? $cartTotals['fee']['value'] : 0)
-            + (!empty($cartTotals['shipping']['value']) ? $cartTotals['shipping']['value'] : 0);
+            + (!empty($cartTotals['shipping']['value']) ? $cartTotals['shipping']['value'] : 0)
+            + (!empty($cartTotals['tax']['value']) ? $cartTotals['tax']['value'] : 0);
         if ($this->cart->getQuote()->getGrandTotal() < $totals) {
             $coupon = "no_code";
             if ($this->cart->getQuote()->getCouponCode() != null) {
@@ -514,7 +517,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $request = $this->taxCalculation->getRateRequest(null, null, null, $this->storeManager->getStore()->getId());
         $feeTaxClass = $this->collectorConfig->getB2CInvoiceFeeTaxClass();
         $feeTax = $this->taxCalculation->getRate($request->setProductClassId($feeTaxClass));
-
+        $shippingTaxClass = $this->scopeConfig->getValue('tax/classes/shipping_tax_class');
+        $shippingTax = $this->taxCalculation->getRate($request->setProductTaxClassId($shippingTaxClass));
         $ret = [];
         if ($fee > 0) {
             $ret['directinvoicenotification'] = [
@@ -529,14 +533,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'id' => "shipping",
                 'description' => $shippingAddress->getShippingMethod(),
                 'unitPrice' => $shippingAddress->getShippingInclTax(),
-                'vat' => 0
+                'vat' => $shippingTax
             ];
         } else {
             $ret['shipping'] = [
                 'id' => 'shipping',
                 'description' => 'freeshipping_freeshipping',
                 'unitPrice' => 0,
-                'vat' => '0'
+                'vat' => $shippingTax
             ];
         }
         return $ret;
