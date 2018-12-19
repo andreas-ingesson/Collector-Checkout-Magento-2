@@ -28,7 +28,7 @@ All of these are in Stores -> Configuration
 * Collector -> Checkout -> General -> Terms and conditions URL, full url incluing protocol (e.g https://example.com/terms)
 * Sales -> Tax -> Calculation Settings -> Apply Customer Tax: Before Discount
 * Sales -> Tax -> Calculation Settings -> Apply Discount on Prices: Including Tax
-* General -> General -> Store Information -> Country -> Sweden or Norway
+* General -> General -> Country Options -> Default Country -> Sweden or Norway
 
 #### Recommended Settings:
 * Sales -> Tax -> Shopping Carty Display Settings -> Display Prices -> Including Tax
