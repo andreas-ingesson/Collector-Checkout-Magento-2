@@ -253,6 +253,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             $changed = true;
                         }
                     }
+                    $this->helper->getShippingMethods();
                     $this->cart->save();
                     break;
                 case "inc":
@@ -281,6 +282,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             }
                         }
                     }
+                    $this->helper->getShippingMethods();
                     $this->cart->save();
                     break;
                 case "radio":

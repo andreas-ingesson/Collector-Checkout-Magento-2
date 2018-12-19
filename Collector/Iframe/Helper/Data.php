@@ -363,6 +363,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $this->cart->getQuote()->getShippingAddress()->addShippingRate($this->shippingRate);
                     } catch (\Exception $e) {
                     }
+                    $this->cart->getQuote()->setTotalsCollectedFlag(false);
+                    $this->cart->getQuote()->collectTotals();
                     $this->cart->getQuote()->save();
                     break;
                 }
