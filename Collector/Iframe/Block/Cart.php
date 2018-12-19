@@ -46,6 +46,11 @@ class Cart extends \Magento\Checkout\Block\Onepage
      * @var \Collector\Base\Helper\Prices
      */
     protected $collectorPriceHelper;
+    
+    /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $customerSession;
 
     /**
      * Cart constructor.
@@ -60,6 +65,7 @@ class Cart extends \Magento\Checkout\Block\Onepage
      * @param \Collector\Base\Model\Config $collectorConfig
      * @param \Magento\Checkout\Helper\Data $checkoutHelper
      * @param \Collector\Base\Helper\Prices $collectorPriceHelper
+     * @param \Magento\Customer\Model\Session $customerSession
      * @param array $layoutProcessors
      * @param array $data
      */
@@ -75,6 +81,7 @@ class Cart extends \Magento\Checkout\Block\Onepage
         \Collector\Base\Model\Config $collectorConfig,
         \Magento\Checkout\Helper\Data $checkoutHelper,
         \Collector\Base\Helper\Prices $collectorPriceHelper,
+        \Magento\Customer\Model\Session $customerSession,
         array $layoutProcessors = [],
         array $data = []
     ) {
@@ -85,6 +92,7 @@ class Cart extends \Magento\Checkout\Block\Onepage
         $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
         //end of hack
         
+        $this->customerSession = $customerSession;
         $this->collectorPriceHelper = $collectorPriceHelper;
         $this->checkoutHelper = $checkoutHelper;
         $this->collectorConfig = $collectorConfig;
@@ -149,6 +157,15 @@ class Cart extends \Magento\Checkout\Block\Onepage
             $this->checkoutSession->getQuote()->getBillingAddress()->addData($defaultData);
             $this->checkoutSession->getQuote()->getShippingAddress()->addData($defaultData);
             $this->checkoutSession->getQuote()->getShippingAddress()->save();
+        }
+        
+        if($this->customerSession->isLoggedIn()) {
+            $this->checkoutSession->getQuote()->setData('customer_is_logged_in', 1);
+            $this->checkoutSession->getQuote()->save();
+        }
+        else {
+            $this->checkoutSession->getQuote()->setData('customer_is_logged_in', 0);
+            $this->checkoutSession->getQuote()->save();
         }
 
         $this->checkoutSession->getQuote()->getBillingAddress()->save();

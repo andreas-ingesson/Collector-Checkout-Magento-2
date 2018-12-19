@@ -236,6 +236,7 @@ class Index extends \Magento\Framework\App\Action\Action
         
         
         try {
+            $customerLoggedIn = $quote->getData('customer_is_logged_in');
             $order = null;
             if (empty($quote->getData('collector_public_token'))) {
                 $this->collectorLogger->error('Error while public_token loading');
@@ -514,11 +515,11 @@ class Index extends \Magento\Framework\App\Action\Action
             $quote->getPayment()->importData(['method' => $paymentMethod]);
             $quote->getPayment()->save();
             $quote->setReservedOrderId($response['data']['reference']);
-            if ($createAccount) {
+            if ($createAccount || $customerLoggedIn == 1) {
                 $quote->getBillingAddress()->setCustomerId($customer->getId());
                 $quote->getShippingAddress()->setCustomerId($customer->getId());
             }
-            if (!$createAccount) {
+            if (!$createAccount && !$customerLoggedIn == 1) {
                 $quote->setCustomerId(null);
                 $quote->setCustomerEmail($email);
                 $quote->setCustomerIsGuest(true);
@@ -541,6 +542,7 @@ class Index extends \Magento\Framework\App\Action\Action
             return $resultPage->setData($resp);
         } catch (\Exception $e) {
             $this->collectorLogger->error($e->getMessage());
+            $this->collectorLogger->error($e->getTraceAsString());
             $return = array(
                 'title' => "Could not place Order",
                 'message' => $e->getMessage()

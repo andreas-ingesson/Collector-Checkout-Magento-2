@@ -170,6 +170,25 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $connection->addColumn($table, $name, $definition);
             }
         }
+        
+        if (version_compare($context->getVersion(), '2.0.5') < 0) {
+            $table = $setup->getTable('quote');
+            
+            $columns = [
+                'customer_is_logged_in' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'length' => '255',
+                    'nullable' => true,
+                    'default' => 0,
+                    'comment' => 'Customer is logged in',
+                ],
+            ];
+
+            $connection = $setup->getConnection();
+            foreach ($columns as $name => $definition) {
+                $connection->addColumn($table, $name, $definition);
+            }
+        }
         $setup->endSetup();
     }
 }
