@@ -141,12 +141,13 @@ class Cart extends \Magento\Checkout\Block\Onepage
 
     public function init()
     {
+        $country = $this->collectorConfig->getCountryCode();
         $defaultData = [
             'firstname' => 'Kalle',
             'lastname' => 'Anka',
             'street' => 'Ankgatan',
             'city' => 'Ankeborg',
-            'country_id' => 'SE',
+            'country_id' => $country,
             'postcode' => '12345',
             'telephone' => '0123456789'
         ];
