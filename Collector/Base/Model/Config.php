@@ -427,4 +427,20 @@ class Config
             return "https://checkout.collector.se/collector-checkout-loader.js";
         }
     }
+    
+    public function getUseBundleParentImage()
+    {
+        return $this->scopeConfig->getValue(
+            'checkout/cart/grouped_product_image',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+    
+    public function getUseConfigurableParentImage()
+    {
+        return $this->scopeConfig->getValue(
+            'checkout/cart/configurable_product_image',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
 }

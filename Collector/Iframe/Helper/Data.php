@@ -105,6 +105,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $couponFactory;
     
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
+    protected $productFactory;
+    
+    /**
+     * @var \Magento\GroupedProduct\Model\Product\Type\Grouped
+     */
+    protected $groupedProductClass;
 
     /**
      * Data constructor.
@@ -128,6 +137,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Quote\Api\CartRepositoryInterface $_quoteRepository
      * @param \Magento\Framework\Escaper $_escaper
      * @param \Magento\SalesRule\Model\CouponFactory $_couponFactory
+     * @param \Magento\Catalog\Model\ProductFactory $_productFactory
+     * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $_groupedProductClass
      * @param \Collector\Base\Helper\Prices $collectorPriceHelper
      */
     public function __construct(
@@ -151,6 +162,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Quote\Api\CartRepositoryInterface $_quoteRepository,
         \Magento\Framework\Escaper $_escaper,
         \Magento\SalesRule\Model\CouponFactory $_couponFactory,
+        \Magento\Catalog\Model\ProductFactory $_productFactory,
+        \Magento\GroupedProduct\Model\Product\Type\Grouped $_groupedProductClass,
         \Collector\Base\Helper\Prices $collectorPriceHelper
     ) {
         //ugly hack to remove compilation errors in Magento 2.1.x
@@ -158,6 +171,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
         //end of hack
         
+        $this->groupedProductClass = $_groupedProductClass;
+        $this->productFactory = $_productFactory;
         $this->collectorPriceHelper = $collectorPriceHelper;
         $this->checkoutHelper = $checkoutHelper;
         $this->apiRequest = $apiRequest;
@@ -398,10 +413,38 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 foreach ($op['attributes_info'] as $option) {
                     $options[] = $option['label'] . ": " . $option['value'];
                 }
+                if ($this->collectorConfig->getUseConfigurableParentImage() == \Magento\Catalog\Model\Config\Source\Product\Thumbnail::OPTION_USE_PARENT_IMAGE){
+                    $image = $this->imageHelper->init(
+                        $product,
+                        'product_page_image_small'
+                    )->setImageFile($product->getFile())->resize(80, 80)->getUrl();
+                }
+                else {
+                    $image = $this->imageHelper->init(
+                        $cartItem->getChildren()[0]->getProduct(),
+                        'product_page_image_small'
+                    )->setImageFile($cartItem->getChildren()[0]->getProduct()->getFile())->resize(80, 80)->getUrl();
+                }
             } else {
                 if ($cartItem->getProductType() == 'bundle') {
                     foreach ($op['bundle_options'] as $option) {
                         $options[] = $option['value'][0]['title'];
+                    }
+                }
+                else if ($cartItem->getProductType() == 'grouped'){
+                    if ($this->collectorConfig->getUseBundleParentImage() == \Magento\Catalog\Model\Config\Source\Product\Thumbnail::OPTION_USE_PARENT_IMAGE){
+                        $groupedProductId = $this->groupedProductClass->getParentIdsByChild($product->getId())[0];
+                        $groupedProduct = $this->productFactory->create()->load($groupedProductId);
+                        $image = $this->imageHelper->init(
+                            $groupedProduct,
+                            'product_page_image_small'
+                        )->setImageFile($groupedProduct->getFile())->resize(80, 80)->getUrl();
+                    }
+                    else {
+                        $image = $this->imageHelper->init(
+                            $product,
+                            'product_page_image_small'
+                        )->setImageFile($product->getFile())->resize(80, 80)->getUrl();
                     }
                 }
             }
@@ -425,10 +468,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     true,
                     false
                 ),
-                'img' => $this->imageHelper->init(
-                    $product,
-                    'product_page_image_small'
-                )->setImageFile($product->getFile())->resize(80, 80)->getUrl()
+                'img' => $image
             );
             if ($this->scopeConfig->getValue('tax/cart_display/price') == 3){
                 $item['sum'] .= "<br><span style=\"font-size: 10px;\">" . 
