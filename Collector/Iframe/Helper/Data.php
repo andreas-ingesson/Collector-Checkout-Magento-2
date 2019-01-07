@@ -447,6 +447,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         )->setImageFile($product->getFile())->resize(80, 80)->getUrl();
                     }
                 }
+                else {
+                    $image = $this->imageHelper->init(
+                        $product,
+                        'product_page_image_small'
+                    )->setImageFile($product->getFile())->resize(80, 80)->getUrl();
+                }
             }
             
             $item = array(
