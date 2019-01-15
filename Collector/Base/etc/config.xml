@@ -5,7 +5,7 @@
             <version>
                 <base>2.0.3</base>
                 <gateways>2.0.2</gateways>
-                <iframe>2.0.7</iframe>
+                <iframe>2.0.8</iframe>
             </version>
         </collector_collectorcheckout>
 	</default>

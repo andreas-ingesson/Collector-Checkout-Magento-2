@@ -343,54 +343,51 @@ class Cajax extends \Magento\Framework\App\Action\Action
                 case "updatecustomer":
                     try {
                         $resp = $this->getCheckoutData();
+                        $shippingAddr = $this->cart->getQuote()->getShippingAddress();
+                        $billingAddr = $this->cart->getQuote()->getBillingAddress();
                         if (isset($resp['data']['businessCustomer']['invoiceAddress'])) {
-                            $shipping = [
-                                'firstname' => $resp['data']['customer']['businessCustomer']['firstName'],
-                                'lastname' => $resp['data']['customer']['businessCustomer']['lastName'],
-                                'city' => $resp['data']['customer']['businessCustomer']['city'],
-                                'postcode' => $resp['data']['customer']['businessCustomer']['postalCode']
-                            ];
+                            
+                            $shippingAddr->setFirstname($resp['data']['customer']['businessCustomer']['firstName']);
+                            $shippingAddr->setLastname($resp['data']['customer']['businessCustomer']['lastName']);
+                            $shippingAddr->setPostCode($resp['data']['customer']['businessCustomer']['postalCode']);
+                            $shippingAddr->setCity($resp['data']['customer']['businessCustomer']['city']);
                             if (isset($resp['data']['businessCustomer']['deliveryAddress']['address'])) {
-                                $shipping['street'] =
-                                    $resp['data']['businessCustomer']['deliveryAddress']['address'];
+                                $shippingAddr->setStreet($resp['data']['businessCustomer']['deliveryAddress']['address']);
                             } else {
-                                $shipping['street'] =
-                                    $resp['data']['businessCustomer']['deliveryAddress']['postalCode'];
+                                $shippingAddr->setStreet($resp['data']['businessCustomer']['deliveryAddress']['postalCode']);
                             }
-                            $billing = [
-                                'firstname' => $resp['data']['businessCustomer']['firstName'],
-                                'lastname' => $resp['data']['businessCustomer']['lastName'],
-                                'city' => $resp['data']['businessCustomer']['invoiceAddress']['city'],
-                                'postcode' => $resp['data']['businessCustomer']['invoiceAddress']['postalCode'],
-                                'telephone' => $resp['data']['businessCustomer']['mobilePhoneNumber']
-                            ];
+                            
+                            $billingAddr->setFirstname($resp['data']['businessCustomer']['firstName']);
+                            $billingAddr->setLastname($resp['data']['businessCustomer']['lastName']);
+                            $billingAddr->setPostCode($resp['data']['businessCustomer']['billingAddress']['postalCode']);
+                            $billingAddr->setCity($resp['data']['businessCustomer']['invoiceAddress']['city']);
+                            $billingAddr->setTelephone($resp['data']['businessCustomer']['mobilePhoneNumber']);
+                            
                             if (isset($resp['data']['businessCustomer']['invoiceAddress']['address'])) {
-                                $billing['street'] = $resp['data']['businessCustomer']['invoiceAddress']['address'];
+                                $billingAddr->setStreet($resp['data']['businessCustomer']['invoiceAddress']['address']);
                             } else {
-                                $billing['street'] = $resp['data']['businessCustomer']['invoiceAddress']['postalCode'];
+                                $billingAddr->setStreet($resp['data']['businessCustomer']['invoiceAddress']['postalCode']);
                             }
                         } else {
-                            $shipping = [
-                                'firstname' => $resp['data']['customer']['deliveryAddress']['firstName'],
-                                'lastname' => $resp['data']['customer']['deliveryAddress']['lastName'],
-                                'street' => $resp['data']['customer']['deliveryAddress']['address'],
-                                'city' => $resp['data']['customer']['deliveryAddress']['city'],
-                                'postcode' => $resp['data']['customer']['deliveryAddress']['postalCode']
-                            ];
-                            $billing = [
-                                'firstname' => $resp['data']['customer']['billingAddress']['firstName'],
-                                'lastname' => $resp['data']['customer']['billingAddress']['lastName'],
-                                'street' => $resp['data']['customer']['billingAddress']['address'],
-                                'city' => $resp['data']['customer']['billingAddress']['city'],
-                                'postcode' => $resp['data']['customer']['billingAddress']['postalCode'],
-                                'telephone' => $resp['data']['customer']['mobilePhoneNumber']
-                            ];
+                            $shippingAddr->setFirstname($resp['data']['customer']['deliveryAddress']['firstName']);
+                            $shippingAddr->setLastname($resp['data']['customer']['deliveryAddress']['lastName']);
+                            $shippingAddr->setStreet($resp['data']['customer']['deliveryAddress']['address']);
+                            $shippingAddr->setPostCode($resp['data']['customer']['deliveryAddress']['postalCode']);
+                            $shippingAddr->setCity($resp['data']['customer']['deliveryAddress']['city']);
+                            
+                            $billingAddr->setFirstname($resp['data']['customer']['billingAddress']['firstName']);
+                            $billingAddr->setLastname($resp['data']['customer']['billingAddress']['lastName']);
+                            $billingAddr->setStreet($resp['data']['customer']['billingAddress']['address']);
+                            $billingAddr->setPostCode($resp['data']['customer']['billingAddress']['postalCode']);
+                            $billingAddr->setCity($resp['data']['customer']['billingAddress']['city']);
+                            $billingAddr->setTelephone($resp['data']['customer']['mobilePhoneNumber']);
                         }
-                        $this->cart->getQuote()->getBillingAddress()->addData($billing)->save();
-                        $this->cart->getQuote()->getShippingAddress()->addData($shipping)->save();
+                        $billingAddr->save();
+                        $shippingAddr->save();
                         $this->cart->getQuote()->collectTotals();
                         $this->cart->getQuote()->save();
                         $updateCart = true;
+                        $changed = true;
                         $updateFees = true;
                     } catch (\Exception $e) {
                     }

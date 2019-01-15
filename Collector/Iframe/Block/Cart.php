@@ -141,6 +141,9 @@ class Cart extends \Magento\Checkout\Block\Onepage
 
     public function init()
     {
+        if ($this->checkoutSession->getQuote()->getBillingAddress()->getPostCode() !== NULL){
+            return;
+        }
         $country = $this->collectorConfig->getCountryCode();
         $defaultData = [
             'firstname' => 'Kalle',
@@ -151,7 +154,6 @@ class Cart extends \Magento\Checkout\Block\Onepage
             'postcode' => '12345',
             'telephone' => '0123456789'
         ];
-
         if ($this->isShippingAddressEnabled()) {
             $this->checkoutSession->getQuote()->getBillingAddress()->addData($defaultData);
         } else {
