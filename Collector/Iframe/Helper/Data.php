@@ -491,6 +491,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getProducts()
     {
+        $quoteTotals = $this->checkoutSession->getQuote()->getShippingAddress()->getData();
         $request = $this->taxCalculation->getRateRequest(null, null, null, $this->storeManager->getStore()->getId());
         $cartTotals = $this->collectorPriceHelper->getQuoteTotalsArray($this->cart->getQuote(), false);
         $items = [];
@@ -536,10 +537,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'vat' => $percent
             ));
         }
+        
         $totals =
-            (!empty($cartTotals['subtotal']['value']) ? $cartTotals['subtotal']['value'] : 0)
+            (!empty($quoteTotals['subtotal']) ? $quoteTotals['subtotal'] : 0)
             + (!empty($cartTotals['fee']['value']) ? $cartTotals['fee']['value'] : 0)
-            + (!empty($cartTotals['shipping']['value']) ? $cartTotals['shipping']['value'] : 0)
+            + (!empty($quoteTotals['shipping_amount']) ? $quoteTotals['shipping_amount'] - $quoteTotals['shipping_tax_amount'] : 0)
             + (!empty($cartTotals['tax']['value']) ? $cartTotals['tax']['value'] : 0);
         if ($this->cart->getQuote()->getGrandTotal() < $totals) {
             $coupon = "no_code";

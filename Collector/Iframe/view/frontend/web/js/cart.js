@@ -308,6 +308,13 @@ define([
                         // ... and finally resume the Checkout after the backend call is completed to update the checkout
                         jQuery('body').removeClass('is-suspended');
                         window.collector.checkout.api.resume();
+                        require([
+                            'Magento_Customer/js/customer-data'
+                        ], function (customerData) {
+                            var sections = ['cart'];
+                            customerData.invalidate(sections);
+                            customerData.reload(sections, true);
+                        });
                     },
                 });
             });
