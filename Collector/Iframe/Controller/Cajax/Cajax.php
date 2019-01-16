@@ -347,10 +347,10 @@ class Cajax extends \Magento\Framework\App\Action\Action
                         $billingAddr = $this->cart->getQuote()->getBillingAddress();
                         if (isset($resp['data']['businessCustomer']['invoiceAddress'])) {
                             
-                            $shippingAddr->setFirstname($resp['data']['customer']['businessCustomer']['firstName']);
-                            $shippingAddr->setLastname($resp['data']['customer']['businessCustomer']['lastName']);
-                            $shippingAddr->setPostCode($resp['data']['customer']['businessCustomer']['postalCode']);
-                            $shippingAddr->setCity($resp['data']['customer']['businessCustomer']['city']);
+                            $shippingAddr->setFirstname($resp['data']['businessCustomer']['firstName']);
+                            $shippingAddr->setLastname($resp['data']['businessCustomer']['lastName']);
+                            $shippingAddr->setPostCode($resp['data']['businessCustomer']['deliveryAddress']['postalCode']);
+                            $shippingAddr->setCity($resp['data']['businessCustomer']['deliveryAddress']['city']);
                             if (isset($resp['data']['businessCustomer']['deliveryAddress']['address'])) {
                                 $shippingAddr->setStreet($resp['data']['businessCustomer']['deliveryAddress']['address']);
                             } else {
@@ -359,7 +359,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             
                             $billingAddr->setFirstname($resp['data']['businessCustomer']['firstName']);
                             $billingAddr->setLastname($resp['data']['businessCustomer']['lastName']);
-                            $billingAddr->setPostCode($resp['data']['businessCustomer']['billingAddress']['postalCode']);
+                            $billingAddr->setPostCode($resp['data']['businessCustomer']['invoiceAddress']['postalCode']);
                             $billingAddr->setCity($resp['data']['businessCustomer']['invoiceAddress']['city']);
                             $billingAddr->setTelephone($resp['data']['businessCustomer']['mobilePhoneNumber']);
                             
