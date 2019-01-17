@@ -537,7 +537,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'vat' => $percent
             ));
         }
-        
         $totals =
             (!empty($quoteTotals['subtotal']) ? $quoteTotals['subtotal'] : 0)
             + (!empty($cartTotals['fee']['value']) ? $cartTotals['fee']['value'] : 0)

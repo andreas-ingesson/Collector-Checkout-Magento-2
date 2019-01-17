@@ -384,10 +384,12 @@ class Cajax extends \Magento\Framework\App\Action\Action
                         }
                         $billingAddr->save();
                         $shippingAddr->save();
+                        $this->cart->getQuote()->setTotalsCollectedFlag(false);
                         $this->cart->getQuote()->collectTotals();
                         $this->cart->getQuote()->save();
                         $updateCart = true;
                         $changed = true;
+                        $changeLanguage = true;
                         $updateFees = true;
                     } catch (\Exception $e) {
                     }
