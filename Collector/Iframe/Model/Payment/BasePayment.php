@@ -48,9 +48,9 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
 
 
     /**
-     * @var \Magento\Payment\Model\Method\Logger
+     * @var \Collector\Base\Logger\Collector
      */
-    protected $logger;
+    protected $collectorLogger;
 
     /**
      * BasePayment constructor.
@@ -64,7 +64,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Framework\Webapi\Soap\ClientFactory $clientFactory
      * @param \Collector\Gateways\Helper\Data $_helper
      * @param \Collector\Base\Model\Session $_collectorSession
-     * @param \Collector\Base\Logger\Collector $logger
+     * @param \Collector\Base\Logger\Collector $_logger
      * @param \Collector\Base\Model\ApiRequest $apiRequest
      * @param \Collector\Base\Model\Config $collectorConfig
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -82,7 +82,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\Webapi\Soap\ClientFactory $clientFactory,
         \Collector\Gateways\Helper\Data $_helper,
         \Collector\Base\Model\Session $_collectorSession,
-        \Collector\Base\Logger\Collector $logger,
+        \Collector\Base\Logger\Collector $_logger,
         \Collector\Base\Model\ApiRequest $apiRequest,
         \Collector\Base\Model\Config $collectorConfig,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
@@ -91,7 +91,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
     ) {
         $this->collectorConfig = $collectorConfig;
         $this->apiRequest = $apiRequest;
-        $this->logger = $logger;
+        $this->collectorLogger = $_logger;
         $this->collectorSession = $_collectorSession;
         $this->helper = $_helper;
         $this->clientFactory = $clientFactory;
@@ -191,8 +191,8 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
                     $payment->setIsTransactionClosed(false);
                 }
             } catch (\Exception $e) {
-                $this->logger->error($e->getMessage());
-                $this->logger->error($e->getTraceAsString());
+                $this->collectorLogger->error($e->getMessage());
+                $this->collectorLogger->error($e->getTraceAsString());
             }
         }
         $this->collectorSession->setIsIframe(false);
@@ -225,13 +225,13 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
                 $order->setData('fee_amount_invoiced', $order->getData('fee_amount'));
                 $order->setData('base_fee_amount_invoiced', $order->getData('base_fee_amount'));
             } catch (\Exception $e) {
-                $this->logger->error(var_export($req, true));
-                $this->logger->error(
+                $this->collectorLogger->error(var_export($req, true));
+                $this->collectorLogger->error(
                     "capture " . $payment->getOrder()->getIncrementId() . ": " .
                     var_export($req, true)
                 );
-                $this->logger->error($e->getMessage());
-                $this->logger->error($e->getTraceAsString());
+                $this->collectorLogger->error($e->getMessage());
+                $this->collectorLogger->error($e->getTraceAsString());
             }
         } else {
             foreach ($payment->getOrder()->getInvoiceCollection() as $invoice) {
@@ -296,8 +296,8 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
                         $order->setData('base_fee_amount_invoiced', $order->getData('base_fee_amount'));
                         $order->setData('collector_invoice_id', $resp->NewInvoiceNo);
                     } catch (\Exception $e) {
-                        $this->logger->error($e->getMessage());
-                        $this->logger->error($e->getTraceAsString());
+                        $this->collectorLogger->error($e->getMessage());
+                        $this->collectorLogger->error($e->getTraceAsString());
                     }
                 }
             }
@@ -319,8 +319,8 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         try {
             $client->CancelInvoice($req);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-            $this->logger->error($e->getTraceAsString());
+            $this->collectorLogger->error($e->getMessage());
+            $this->collectorLogger->error($e->getTraceAsString());
         }
     }
 
@@ -339,8 +339,8 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         try {
             $client->CancelInvoice($req);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-            $this->logger->error($e->getTraceAsString());
+            $this->collectorLogger->error($e->getMessage());
+            $this->collectorLogger->error($e->getTraceAsString());
         }
     }
 
@@ -361,8 +361,8 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
             try {
                 $client->CreditInvoice($req);
             } catch (\Exception $e) {
-                $this->logger->error(var_export($e->getMessage(), true));
-                $this->logger->error(var_export($e->getTraceAsString(), true));
+                $this->collectorLogger->error(var_export($e->getMessage(), true));
+                $this->collectorLogger->error(var_export($e->getTraceAsString(), true));
             }
         }
     }
