@@ -159,8 +159,10 @@ class Success extends \Magento\Checkout\Block\Onepage
     public function clearSession(){
         $this->checkoutSession->clearStorage();
         $this->checkoutSession->clearQuote();
-        $this->collectorSession->unsCollectorPublicToken();
         $this->collectorSession->expireSessionCookie();
+        $this->collectorSession->setCollectorPublicToken(null);
+        $this->collectorSession->clearStorage();
+        $this->collectorSession->unsCollectorPublicToken();
         $quote = $this->getQuote();
         $quote->setIsActive(0);
     }
