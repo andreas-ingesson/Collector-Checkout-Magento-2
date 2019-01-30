@@ -430,6 +430,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     foreach ($op['bundle_options'] as $option) {
                         $options[] = $option['value'][0]['title'];
                     }
+                    $image = $this->imageHelper->init(
+                        $product,
+                        'product_page_image_small'
+                    )->setImageFile($product->getFile())->resize(80, 80)->getUrl();
                 }
                 else if ($cartItem->getProductType() == 'grouped'){
                     if ($this->collectorConfig->getUseBundleParentImage() == \Magento\Catalog\Model\Config\Source\Product\Thumbnail::OPTION_USE_PARENT_IMAGE){
