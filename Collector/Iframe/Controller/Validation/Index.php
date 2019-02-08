@@ -242,7 +242,7 @@ class Index extends \Magento\Framework\App\Action\Action
                 $this->collectorLogger->error('Error while public_token loading');
                 $return = array(
                     'title' => __("Session Has Expired"),
-                    'message' => __("Please reload the page)"
+                    'message' => __("Please reload the page")
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
