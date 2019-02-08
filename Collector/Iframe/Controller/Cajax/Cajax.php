@@ -284,13 +284,18 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             else {
                                 $product = $this->productRepository->get($item->getSku());
                                 $stockItem = $this->stockItemRepository->get($product->getId());
+                                ob_start();
+                                var_dump($stockItem->getData('use_config_manage_stock'));
+                                var_dump($stockItem->getData('manage_stock'));
+                                var_dump($this->collectorConfig->getManageStock());
+                                file_put_contents("var/log/stockitem.log", ob_get_clean() . "\n", FILE_APPEND);
                                 if ($stockItem->getData('use_config_manage_stock') == 1){
                                     $manageStock = $this->collectorConfig->getManageStock();
                                 }
                                 else {
                                     $manageStock = $stockItem->getData('manage_stock');
                                 }
-                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) || $manageStock) {
+                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) || !$manageStock) {
                                     $item->setQty($item->getQty() + 1);
                                     $changed = true;
                                     $updateCart = true;
