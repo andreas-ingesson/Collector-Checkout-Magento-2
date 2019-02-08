@@ -254,6 +254,7 @@ class Index extends \Magento\Framework\App\Action\Action
         );
         $this->checkoutSession->setLastOrderId($order->getId());
         $resultPage = $this->resultPageFactory->create();
+        $order = $this->orderInterface->load($order->getId()); // Reload order so that we do not overwrite changes to the order made by event observers
         $order->setData('shown_success_page', 1);
         $order->save();
         return $resultPage;
