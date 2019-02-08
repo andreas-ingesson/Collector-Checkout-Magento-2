@@ -43,6 +43,14 @@ class Config
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
+
+    public function getManageStock()
+    {
+        return $this->scopeConfig->getValue(
+            'cataloginventory/item_options/manage_stock',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
     
     public function getUpdateDbCustomer()
     {

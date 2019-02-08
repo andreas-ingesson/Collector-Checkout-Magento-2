@@ -389,7 +389,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->collectorPriceHelper->getQuoteShippingPrice($this->cart->getQuote(), true);
     }
 
-
     public function getShippingPrice($inclFormatting = true)
     {
         if (empty($this->cart->getQuote()->getShippingAddress()->getShippingMethod())) {
@@ -491,7 +490,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $items;
     }
-
 
     public function getProducts()
     {

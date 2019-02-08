@@ -99,6 +99,14 @@ class Cajax extends \Magento\Framework\App\Action\Action
      * @var \Magento\Catalog\Api\ProductRepositoryInterface
      */
     protected $productRepository;
+    /**
+     * @var \Magento\CatalogInventory\Model\Stock\StockItemRepository
+     */
+    protected $stockItemRepository;
+    /**
+     * @var \Collector\Base\Model\Config
+     */
+    protected $collectorConfig;
 
     /**
      * Cajax constructor.
@@ -120,6 +128,8 @@ class Cajax extends \Magento\Framework\App\Action\Action
      * @param \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource
      * @param \Magento\Store\Model\StoreManagerInterface $_storeManager
 	 * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $_stockItemRepository
+     * @param \Collector\Base\Model\Config $_collectorConfig
      */
     public function __construct(
         \Magento\Framework\View\Result\LayoutFactory $_layoutFactory,
@@ -139,7 +149,9 @@ class Cajax extends \Magento\Framework\App\Action\Action
         \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface,
         \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource,
         \Magento\Store\Model\StoreManagerInterface $_storeManager,
-		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $_stockItemRepository,
+        \Collector\Base\Model\Config $_collectorConfig
     ) {
         parent::__construct($context);
         
@@ -147,7 +159,9 @@ class Cajax extends \Magento\Framework\App\Action\Action
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->messageManager = $objectManager->get('\Magento\Framework\Message\ManagerInterface');
         //end of hack
-        
+
+        $this->collectorConfig = $_collectorConfig;
+        $this->stockItemRepository = $_stockItemRepository;
 		$this->productRepository = $productRepository;
         $this->apiRequest = $apiRequest;
         $this->logger = $logger;
@@ -269,7 +283,14 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             }
                             else {
                                 $product = $this->productRepository->get($item->getSku());
-                                if ($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) {
+                                $stockItem = $this->stockItemRepository->get($product->getId());
+                                if ($stockItem->getData('use_config_manage_stock') == 1){
+                                    $manageStock = $this->collectorConfig->getManageStock();
+                                }
+                                else {
+                                    $manageStock = $stockItem->getData('manage_stock');
+                                }
+                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) || $manageStock) {
                                     $item->setQty($item->getQty() + 1);
                                     $changed = true;
                                     $updateCart = true;
