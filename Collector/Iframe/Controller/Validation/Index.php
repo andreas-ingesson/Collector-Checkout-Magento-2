@@ -241,8 +241,8 @@ class Index extends \Magento\Framework\App\Action\Action
             if (empty($quote->getData('collector_public_token'))) {
                 $this->collectorLogger->error('Error while public_token loading');
                 $return = array(
-                    'title' => "Session Has Expired",
-                    'message' => "Please reload the page"
+                    'title' => __("Session Has Expired"),
+                    'message' => __("Please reload the page)"
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
@@ -252,8 +252,8 @@ class Index extends \Magento\Framework\App\Action\Action
             if ($response["code"] == 0) {
                 $this->collectorLogger->error($response['error']['message']);
                 $return = array(
-                    'title' => "Could not place Order",
-                    'message' => $response['error']['message']
+                    'title' => __("Could not place Order"),
+                    'message' => __($response['error']['message'])
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
@@ -274,8 +274,8 @@ class Index extends \Magento\Framework\App\Action\Action
             if (!$this->collectorConfig->isShippingAddressEnabled() && empty($shippingCountryId)
                 || empty($billingCountryId)) {
                 $return = array(
-                    'title' => "Could not place Order",
-                    'message' => "Missing country information"
+                    'title' => __("Could not place Order"),
+                    'message' => __("Missing country information")
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
@@ -291,8 +291,8 @@ class Index extends \Magento\Framework\App\Action\Action
             $customer->setWebsiteId($websiteId);
             if (empty($response["data"]["customerType"])) {
                 $return = array(
-                    'title' => "Could not place Order",
-                    'message' => "Incorrect user data"
+                    'title' => __("Could not place Order"),
+                    'message' => __("Incorrect user data")
                 );
                 $result = $this->resultJsonFactory->create();
                 $result->setHttpResponseCode(500);
@@ -311,8 +311,8 @@ class Index extends \Magento\Framework\App\Action\Action
                     break;
                 default:
                     $return = array(
-                        'title' => "Could not place Order",
-                        'message' => "Incorrect user data"
+                        'title' => __("Could not place Order"),
+                        'message' => __("Incorrect user data")
                     );
                     $result = $this->resultJsonFactory->create();
                     $result->setHttpResponseCode(500);
@@ -391,18 +391,18 @@ class Index extends \Magento\Framework\App\Action\Action
                     $addArr = $address->toArray();
                     if (isset($shippingAddressArr)){
                         if ($shippingAddressArr['street'] == $addArr['street'] && 
-                        $shippingAddressArr['postcode'] == $addArr['postcode'] && 
-                        $shippingAddressArr['firstname'] == $addArr['firstname'] && 
-                        $shippingAddressArr['lastname'] == $addArr['lastname'] && 
-                        $shippingAddressArr['city'] == $addArr['city']){
+                            $shippingAddressArr['postcode'] == $addArr['postcode'] &&
+                            $shippingAddressArr['firstname'] == $addArr['firstname'] &&
+                            $shippingAddressArr['lastname'] == $addArr['lastname'] &&
+                            $shippingAddressArr['city'] == $addArr['city']){
                             $shippingAddressExists = true;
                         }
                     }
                     if ($billingAddress['street'] == $addArr['street'] && 
-                    $billingAddress['postcode'] == $addArr['postcode'] && 
-                    $billingAddress['firstname'] == $addArr['firstname'] && 
-                    $billingAddress['lastname'] == $addArr['lastname'] && 
-                    $billingAddress['city'] == $addArr['city']){
+                        $billingAddress['postcode'] == $addArr['postcode'] &&
+                        $billingAddress['firstname'] == $addArr['firstname'] &&
+                        $billingAddress['lastname'] == $addArr['lastname'] &&
+                        $billingAddress['city'] == $addArr['city']){
                         $billingAddressExists = true;
                     }
                 }
@@ -544,8 +544,8 @@ class Index extends \Magento\Framework\App\Action\Action
             $this->collectorLogger->error($e->getMessage());
             $this->collectorLogger->error($e->getTraceAsString());
             $return = array(
-                'title' => "Could not place Order",
-                'message' => $e->getMessage()
+                'title' => __("Could not place Order"),
+                'message' => __($e->getMessage())
             );
             $result = $this->resultJsonFactory->create();
             $result->setHttpResponseCode(500);
