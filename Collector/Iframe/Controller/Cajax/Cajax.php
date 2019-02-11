@@ -127,7 +127,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
      * @param \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface
      * @param \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource
      * @param \Magento\Store\Model\StoreManagerInterface $_storeManager
-	 * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $_stockItemRepository
      * @param \Collector\Base\Model\Config $_collectorConfig
      */
@@ -149,12 +149,12 @@ class Cajax extends \Magento\Framework\App\Action\Action
         \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $_stockItemInterface,
         \Magento\CatalogInventory\Model\ResourceModel\Stock\Item $_stockItemResource,
         \Magento\Store\Model\StoreManagerInterface $_storeManager,
-		\Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $_stockItemRepository,
         \Collector\Base\Model\Config $_collectorConfig
     ) {
         parent::__construct($context);
-        
+
         //ugly hack to remove compilation errors in Magento 2.1.x
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->messageManager = $objectManager->get('\Magento\Framework\Message\ManagerInterface');
@@ -162,7 +162,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
 
         $this->collectorConfig = $_collectorConfig;
         $this->stockItemRepository = $_stockItemRepository;
-		$this->productRepository = $productRepository;
+        $this->productRepository = $productRepository;
         $this->apiRequest = $apiRequest;
         $this->logger = $logger;
         $this->collectionSession = $_collectorSession;
@@ -192,7 +192,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
         $updateCart = false;
         $updateFees = false;
         $changeLanguage = false;
-		$message = "";
+        $message = "";
         if ($this->getRequest()->isAjax()) {
             $changed = false;
             switch ($this->getRequest()->getParam('type')) {
@@ -207,9 +207,9 @@ class Cajax extends \Magento\Framework\App\Action\Action
                         $errors = [];
                     }
                     if (!in_array(
-                        $this->cart->getQuote()->getShippingAddress()->getCountryId(),
-                        $this->helper->allowedCountries
-                    ) && $this->getRequest()->getParam('ignore_country') == false) {
+                            $this->cart->getQuote()->getShippingAddress()->getCountryId(),
+                            $this->helper->allowedCountries
+                        ) && $this->getRequest()->getParam('ignore_country') == false) {
                         $errors[] = ('This country is not allowed');
                     }
                     return $result->setData([
@@ -283,14 +283,14 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             }
                             else {
                                 $product = $this->productRepository->get($item->getSku());
-                                $stockItem = $this->stockItemRepository->get($product->getId());
+                                $stockItem = $product->getExtensionAttributes()->getStockItem();
                                 if ($stockItem->getData('use_config_manage_stock') == 1){
                                     $manageStock = $this->collectorConfig->getManageStock();
                                 }
                                 else {
                                     $manageStock = $stockItem->getData('manage_stock');
                                 }
-                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() >= 0) || !$manageStock) {
+                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() > 0) || !$manageStock) {
                                     $item->setQty($item->getQty() + 1);
                                     $changed = true;
                                     $updateCart = true;
@@ -338,7 +338,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
                     foreach ($allItems as $item) {
                         if ($item->getId() == $id) {
                             $this->cart->removeItem($item->getId());
-							$this->cart->save();
+                            $this->cart->save();
                             if (count($allItems) == 1) {
                                 return $result->setData("redirect");
                             }
@@ -367,7 +367,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
                         $shippingAddr = $this->cart->getQuote()->getShippingAddress();
                         $billingAddr = $this->cart->getQuote()->getBillingAddress();
                         if (isset($resp['data']['businessCustomer']['invoiceAddress'])) {
-                            
+
                             $shippingAddr->setFirstname($resp['data']['businessCustomer']['firstName']);
                             $shippingAddr->setLastname($resp['data']['businessCustomer']['lastName']);
                             $shippingAddr->setPostCode($resp['data']['businessCustomer']['deliveryAddress']['postalCode']);
@@ -377,13 +377,13 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             } else {
                                 $shippingAddr->setStreet($resp['data']['businessCustomer']['deliveryAddress']['postalCode']);
                             }
-                            
+
                             $billingAddr->setFirstname($resp['data']['businessCustomer']['firstName']);
                             $billingAddr->setLastname($resp['data']['businessCustomer']['lastName']);
                             $billingAddr->setPostCode($resp['data']['businessCustomer']['invoiceAddress']['postalCode']);
                             $billingAddr->setCity($resp['data']['businessCustomer']['invoiceAddress']['city']);
                             $billingAddr->setTelephone($resp['data']['businessCustomer']['mobilePhoneNumber']);
-                            
+
                             if (isset($resp['data']['businessCustomer']['invoiceAddress']['address'])) {
                                 $billingAddr->setStreet($resp['data']['businessCustomer']['invoiceAddress']['address']);
                             } else {
@@ -395,7 +395,7 @@ class Cajax extends \Magento\Framework\App\Action\Action
                             $shippingAddr->setStreet($resp['data']['customer']['deliveryAddress']['address']);
                             $shippingAddr->setPostCode($resp['data']['customer']['deliveryAddress']['postalCode']);
                             $shippingAddr->setCity($resp['data']['customer']['deliveryAddress']['city']);
-                            
+
                             $billingAddr->setFirstname($resp['data']['customer']['billingAddress']['firstName']);
                             $billingAddr->setLastname($resp['data']['customer']['billingAddress']['lastName']);
                             $billingAddr->setStreet($resp['data']['customer']['billingAddress']['address']);
@@ -419,25 +419,25 @@ class Cajax extends \Magento\Framework\App\Action\Action
             if ($changed) {
                 if ($updateCart) {
                     $gunk = $this->helper->updateCart();
-					if (is_array($gunk)){
-						$return = array(
-							'error' => $gunk['error'],
-							'message' => $gunk['message']
-						);
-						$this->helper->setMessage($gunk['message'], true);
-						return $result->setData($return);
-					}
+                    if (is_array($gunk)){
+                        $return = array(
+                            'error' => $gunk['error'],
+                            'message' => $gunk['message']
+                        );
+                        $this->helper->setMessage($gunk['message'], true);
+                        return $result->setData($return);
+                    }
                 }
                 if ($updateFees) {
                     $gunk = $this->helper->updateFees();
-					if (is_array($gunk)){
-						$return = array(
-							'error' => $gunk['error'],
-							'message' => $gunk['message']
-						);
-						$this->helper->setMessage($gunk['message'], true);
-						return $result->setData($return);
-					}
+                    if (is_array($gunk)){
+                        $return = array(
+                            'error' => $gunk['error'],
+                            'message' => $gunk['message']
+                        );
+                        $this->helper->setMessage($gunk['message'], true);
+                        return $result->setData($return);
+                    }
                 }
                 $page = $this->resultPageFactory->create();
                 $layout = $page->getLayout();
@@ -448,8 +448,8 @@ class Cajax extends \Magento\Framework\App\Action\Action
                 $shippingBlock = $layout->getBlock('collectorcart');
                 $shippingBlock->setTemplate('Collector_Iframe::Shipping-methods.phtml');
                 $shippingHtml = $shippingBlock->toHtml();
-				if (is_array($message)){
-					$this->helper->setMessage($message['message'], $message['error']);
+                if (is_array($message)){
+                    $this->helper->setMessage($message['message'], $message['error']);
                 }
                 if ($changeLanguage) {
                     $checkoutBlock = $layout->getBlock('collectorcheckout');
