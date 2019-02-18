@@ -35,6 +35,7 @@ class Index extends \Magento\Framework\App\Action\Action
     protected $transactionBuilder;
     protected $request;
     protected $orderSender;
+    protected $collectorLogger;
 
     /**
      * Index constructor.
@@ -60,6 +61,7 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Collector\Iframe\Model\State $orderState
 	 * @param \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
+     * @param \Collector\Base\Logger\Collector $_collectorLogger
      */
     public function __construct(
         \Magento\Framework\View\Result\LayoutFactory $_layoutFactory,
@@ -83,12 +85,14 @@ class Index extends \Magento\Framework\App\Action\Action
         \Collector\Base\Model\Config $collectorConfig,
         \Collector\Iframe\Model\State $orderState,
         \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder,
-        \Magento\Framework\Json\Helper\Data $jsonHelper
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        \Collector\Base\Logger\Collector $_collectorLogger
     ) {
         $this->formKey = $formKey;
         $this->orderSender = $orderSender;
         $this->request = $request;
         $this->helper = $_helper;
+        $this->collectorLogger = $_collectorLogger;
         $this->layoutFactory = $_layoutFactory;
         $this->resultPageFactory = $resultPageFactory;
         $this->transactionBuilder = $transactionBuilder;
@@ -116,8 +120,9 @@ class Index extends \Magento\Framework\App\Action\Action
             $this->request->getParam('OrderNo')
         )->getFirstItem();
         $order = $this->orderInterface->loadByIncrementId($this->request->getParam('OrderNo'));
-        
+        $this->collectorLogger->log('info',"recivied notification callback for order: " . $this->request->getParam('OrderNo'));
         $response = $this->getResp($quote->getData('collector_private_id'), $quote->getData('collector_btype'));
+
         $quote->setPaymentMethod($this->getPaymentMethodByName($response['data']['purchase']['paymentName'])); //payment method
         $quote->getPayment()->importData(['method' => $this->getPaymentMethodByName($response['data']['purchase']['paymentName'])]);
         $fee = 0;
@@ -138,7 +143,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $order->setGrandTotal($order->getGrandTotal() + $fee);
         $order->setBaseGrandTotal($order->getBaseGrandTotal() + $fee);
         
-        $this->setOrderStatusState($order, $response["data"]["purchase"]["result"]);
+    //    $this->setOrderStatusState($order, $response["data"]["purchase"]["result"]);
         $order->getPayment()->setMethod($this->getPaymentMethodByName($response['data']['purchase']['paymentName']));
         $order->getPayment()->save();
         $order->setCollectorInvoiceId($response['data']['purchase']['purchaseIdentifier']);
@@ -159,9 +164,9 @@ class Index extends \Magento\Framework\App\Action\Action
         $payment->save();
         $quote->setIsActive(0);
         $order->save();
-        
-        
+
         $this->orderSender->send($order);
+        $this->collectorLogger->log('info',"sent email for order: " . $this->request->getParam('OrderNo'));
         return $resultPage;
     }
     
@@ -207,6 +212,7 @@ class Index extends \Magento\Framework\App\Action\Action
                     $state = $this->orderState->load($status)->getState();
                     break;
             }
+            $this->collectorLogger->log('info',"set status/state for order: " . $this->request->getParam('OrderNo') . ", state: " . $state . ", status: " . $status);
             $order->setState($state)->setStatus($status);
         } catch (\Exception $e) {
             return false;
