@@ -7,7 +7,7 @@ class RemoveOrders
     /**
      * @var \Collector\Base\Logger\Collector
      */
-    protected $logger;
+    protected $collectorLogger;
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
@@ -32,9 +32,9 @@ class RemoveOrders
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\State $appState,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        \Collector\Base\Logger\Collector $logger
+        \Collector\Base\Logger\Collector $_collectorLogger
     ) {
-        $this->logger = $logger;
+        $this->collectorLogger = $_collectorLogger;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->appState = $appState;
         $this->registry = $registry;
