@@ -143,7 +143,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $order->setGrandTotal($order->getGrandTotal() + $fee);
         $order->setBaseGrandTotal($order->getBaseGrandTotal() + $fee);
         
-    //    $this->setOrderStatusState($order, $response["data"]["purchase"]["result"]);
+        $this->setOrderStatusState($order, $response["data"]["purchase"]["result"]);
         $order->getPayment()->setMethod($this->getPaymentMethodByName($response['data']['purchase']['paymentName']));
         $order->getPayment()->save();
         $order->setCollectorInvoiceId($response['data']['purchase']['purchaseIdentifier']);
