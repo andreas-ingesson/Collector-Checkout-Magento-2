@@ -115,7 +115,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
 
     public function getTitle()
     {
-        return "Collector Invoice";
+        return "Collector DirectInvoice";
     }
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)

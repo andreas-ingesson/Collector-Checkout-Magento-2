@@ -12,7 +12,8 @@ class Index extends \Magento\Framework\App\Action\Action
         'Card' => 'collector_card',
         'BankTransfer' => 'collector_bank',
         'Campaign' => 'collector_campaign',
-        'Trustly' => 'collector_trustly'
+        'Trustly' => 'collector_trustly',
+        'Invoice' => 'collector_invoiceinvoice'
     ];
 
     protected $resultPageFactory;

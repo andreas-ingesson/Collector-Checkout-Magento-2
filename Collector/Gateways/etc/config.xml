@@ -6,7 +6,7 @@
                 <payment_action>authorize</payment_action>
                 <model>Collector\Gateways\Model\Payment\Invoice</model>
                 <active>1</active>
-                <title>Collector Invoice</title>
+                <title>Collector DirectInvoice</title>
                 <order_status>pending_payment</order_status>
 				<is_gateway>1</is_gateway>
                 <can_order>1</can_order>
@@ -38,6 +38,18 @@
                 <can_refund>1</can_refund>
 				<group>collector</group>
             </collector_account>
+            <collector_invoiceinvoice>
+                <payment_action>authorize</payment_action>
+                <model>Collector\Gateways\Model\Payment\InvoiceInvoice</model>
+                <active>1</active>
+                <title>Collector Invoice</title>
+                <order_status>pending_payment</order_status>
+                <is_gateway>1</is_gateway>
+                <can_order>1</can_order>
+                <can_capture>1</can_capture>
+                <can_refund>1</can_refund>
+                <group>collector</group>
+            </collector_invoiceinvoice>
         </payment>
     </default>
 </config>
