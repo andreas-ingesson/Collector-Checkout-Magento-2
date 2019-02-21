@@ -28,7 +28,6 @@ define([
                                     if (data.error === 0) {
                                         $('.collector-checkout').removeClass('disabled');
                                     } else {
-                                        alert(data.messages);
                                         event.preventDefault();
                                     }
                                 },
@@ -99,7 +98,6 @@ define([
                                             if (data.error === 0) {
                                                 $('.collector-checkout').removeClass('disabled');
                                             } else {
-                                                alert(data.messages);
                                                 event.preventDefault();
                                             }
                                         },
