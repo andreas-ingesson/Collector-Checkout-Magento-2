@@ -253,6 +253,7 @@ class Index extends \Magento\Framework\App\Action\Action
             ['order_ids' => [$order->getId()]]
         );
         $this->checkoutSession->setLastOrderId($order->getId());
+        $this->checkoutSession->setLastRealOrderId($order->getIncrementId());
         $resultPage = $this->resultPageFactory->create();
         $order = $this->orderInterface->load($order->getId()); // Reload order so that we do not overwrite changes to the order made by event observers
         $order->setData('shown_success_page', 1);
