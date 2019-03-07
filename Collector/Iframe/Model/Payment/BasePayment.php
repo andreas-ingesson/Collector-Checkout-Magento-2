@@ -204,7 +204,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         $client = $this->apiRequest->getInvoiceSOAP(null, $order);
         $storeID = $this->getB2BrB2CStoreId($order);
 
-        if ($order->getGrandTotal() - $order->getTotalInvoiced() == $amount) {
+        if ($order->getGrandTotal() - $order->getTotalInvoiced() == $amount*$order->getBaseToOrderRate()) {
             $req = array(
                 'CorrelationId' => $payment->getOrder()->getIncrementId(),
                 'CountryCode' => $this->collectorConfig->getCountryCodeNotNull($order->getStore()),
@@ -350,7 +350,7 @@ class BasePayment extends \Magento\Payment\Model\Method\AbstractMethod
         $storeID = $this->getB2BrB2CStoreId($order);
         $client = $this->apiRequest->getInvoiceSOAP(null, $order);
 
-        if ($order->getGrandTotal() == $amount) {
+        if ($order->getGrandTotal() == $amount*$order->getBaseToOrderRate()) {
             $req = array(
                 'CorrelationId' => $order->getIncrementId(),
                 'CountryCode' => $this->collectorConfig->getCountryCodeNotNull($order->getStore()),

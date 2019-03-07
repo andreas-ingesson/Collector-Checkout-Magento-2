@@ -267,6 +267,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         foreach ($methods as $method) {
             foreach ($method as $rate) {
+                $price = $rate->getPrice();
+                if ($this->scopeConfig->getValue('tax/calculation/shipping_includes_tax') == 0 && $this->scopeConfig->getValue('tax/cart_display/shipping') == 2){
+                    $price += $price*($shippingTax/100);
+                }
+                else if ($this->scopeConfig->getValue('tax/calculation/shipping_includes_tax') == 1 && $this->scopeConfig->getValue('tax/cart_display/shipping') == 1){
+                    $price = $price/($shippingTax/100+1);
+                }
                 $shipMethod = [
                     'first' => !$selectedIsActive && $first
                         || $selectedIsActive && $rate->getCode() == $shippingAddress->getShippingMethod(),
@@ -281,7 +288,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
                 $shipMethod['content'] = $rate->getMethodTitle() . ": "
                     . $this->pricingHelper->currency(
-                        $rate->getPrice() + ($this->scopeConfig->getValue('tax/cart_display/shipping') == 1 ? 0 : $rate->getPrice() * $shippingTax / 100),
+                        $price,
                         true,
                         false
                     );
@@ -470,12 +477,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $cartItem->getPriceInclTax()
                     ),
                 'qty' => $cartItem->getQty(),
-                'sum' => $this->pricingHelper->currency(
+                'sum' => $this->checkoutHelper->formatPrice(
                     $this->scopeConfig->getValue('tax/cart_display/price') == 1 ?
                         $cartItem->getRowTotal() :
-                        $cartItem->getRowTotalInclTax(),
-                    true,
-                    false
+                        $cartItem->getRowTotalInclTax()
                 ),
                 'img' => $image
             );
@@ -534,7 +539,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             array_push($items, array(
                 'id' => $cartItem->getSku(),
                 'description' => $cartItem->getName(),
-                'unitPrice' => round($this->apiRequest->convert($price, 'SEK'), 2),
+                'unitPrice' => round($price,  2),
                 'quantity' => $qty,
                 'vat' => $percent
             ));
@@ -555,7 +560,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'quantity' => 1,
                 'unitPrice' => sprintf(
                     "%01.2f",
-                    $this->apiRequest->convert($this->cart->getQuote()->getGrandTotal() - $totals, 'SEK')
+                    $this->cart->getQuote()->getGrandTotal() - $totals
                 ),
                 'vat' => '0',
             );
@@ -568,7 +573,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'quantity' => 1,
                 'unitPrice' => sprintf(
                     "%01.2f",
-                    $this->apiRequest->convert($this->cart->getQuote()->getGrandTotal() - ($sum + ($this->cart->getQuote()->getGrandTotal() - $totals)), 'SEK')
+                    $this->cart->getQuote()->getGrandTotal() - ($sum + ($this->cart->getQuote()->getGrandTotal() - $totals))
                 ),
                 'vat' => '0',
             );
@@ -579,12 +584,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getFees()
     {
+        $request = $this->taxCalculation->getRateRequest(null, null, null, $this->storeManager->getStore()->getId());
+        $btype = $this->collectorSession->getBtype('');
+        if ($btype == \Collector\Base\Model\Session::B2B ||
+            empty($btype) && $this->getCustomerType() ==
+            \Collector\Iframe\Model\Config\Source\Customertype::BUSINESS_CUSTOMER
+        ) {
+            $fee = $this->collectorConfig->getInvoiceB2BFee();
+            $feeTaxClass = $this->collectorConfig->getB2BInvoiceFeeTaxClass();
+            $feeTax = $this->taxCalculation->getRate($request->setProductClassId($feeTaxClass));
+        }
+        else {
+            $fee = $this->collectorConfig->getInvoiceB2CFee();
+            $feeTaxClass = $this->collectorConfig->getB2CInvoiceFeeTaxClass();
+            $feeTax = $this->taxCalculation->getRate($request->setProductClassId($feeTaxClass));
+        }
         $this->cart->getQuote()->collectTotals();
         $shippingAddress = $this->cart->getQuote()->getShippingAddress();
-        $fee = $this->collectorConfig->getInvoiceB2BFee();
-        $request = $this->taxCalculation->getRateRequest(null, null, null, $this->storeManager->getStore()->getId());
-        $feeTaxClass = $this->collectorConfig->getB2CInvoiceFeeTaxClass();
-        $feeTax = $this->taxCalculation->getRate($request->setProductClassId($feeTaxClass));
         $shippingTaxClass = $this->scopeConfig->getValue('tax/classes/shipping_tax_class');
         $shippingTax = $this->taxCalculation->getRate($request->setProductTaxClassId($shippingTaxClass));
         $ret = [];
@@ -592,7 +608,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $ret['directinvoicenotification'] = [
                 'id' => 'invoice_fee',
                 'description' => 'Invoice Fee',
-                'unitPrice' => $this->apiRequest->convert($fee, 'SEK', 'base'),
+                'unitPrice' => $fee,
                 'vat' => $feeTax
             ];
         }

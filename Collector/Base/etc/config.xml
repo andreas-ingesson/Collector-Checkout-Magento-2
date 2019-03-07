@@ -3,9 +3,9 @@
 	<default>
 		<collector_collectorcheckout>
             <version>
-                <base>2.0.3</base>
-                <gateways>2.0.2</gateways>
-                <iframe>2.0.19</iframe>
+                <base>2.0.4</base>
+                <gateways>2.0.3</gateways>
+                <iframe>2.0.20</iframe>
             </version>
         </collector_collectorcheckout>
 	</default>

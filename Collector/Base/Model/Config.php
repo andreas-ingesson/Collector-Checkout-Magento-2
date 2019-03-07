@@ -113,6 +113,14 @@ class Config
         );
     }
 
+    public function getB2BInvoiceFeeTaxClass()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/invoice/invoice_fee_b2b_tax_class',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
     public function getUsername()
     {
         return $this->scopeConfig->getValue(

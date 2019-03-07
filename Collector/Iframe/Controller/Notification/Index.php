@@ -129,10 +129,10 @@ class Index extends \Magento\Framework\App\Action\Action
         $fee = 0;
         if ($this->getPaymentMethodByName($response['data']['purchase']['paymentName']) == 'collector_invoice'){
             if ($response['data']['customerType'] == "PrivateCustomer"){
-                $fee = $this->apiRequest->convert($this->collectorConfig->getInvoiceB2CFee(), null, 'SEK');
+                $fee = $this->collectorConfig->getInvoiceB2CFee();
             }
             else {
-                $fee = $this->apiRequest->convert($this->collectorConfig->getInvoiceB2BFee(), null, 'SEK');
+                $fee = $this->collectorConfig->getInvoiceB2BFee();
             }
         }
         $quote->setFeeAmount($fee);

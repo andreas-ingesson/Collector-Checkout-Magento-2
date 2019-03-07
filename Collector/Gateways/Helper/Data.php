@@ -44,7 +44,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'ArticleId' => $item->getSku(),
                 'Description' => $item->getName(),
                 'Quantity' => $item->getQtyOrdered(),
-                'UnitPrice' => $this->apiRequest->convert($item->getPriceInclTax(), 'SEK'),
+                'UnitPrice' => $item->getPriceInclTax(),
                 'VAT' => $item->getTaxPercent()
             ];
             array_push($rows, $itemArr);
@@ -53,7 +53,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'ArticleId' => 'shipping',
             'Description' => substr($order->getShippingDescription(), 0, 50),
             'Quantity' => 1,
-            'UnitPrice' => sprintf("%01.2f", $this->apiRequest->convert($order->getBaseShippingInclTax(), 'SEK')),
+            'UnitPrice' => sprintf("%01.2f", $order->getBaseShippingInclTax()),
             'VAT' => sprintf("%01.2f", $order->getBaseShippingTaxAmount() / $order->getBaseShippingAmount() * 100),
         ];
         if ($order->getDiscountAmount() < 0) {
@@ -61,7 +61,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'ArticleId' => 'discount',
                 'Description' => empty($order->getCouponCode()) ? 'no_code' : $order->getCouponCode(),
                 'Quantity' => 1,
-                'UnitPrice' => sprintf("%01.2f", $this->apiRequest->convert($order->getDiscountAmount(), 'SEK')),
+                'UnitPrice' => sprintf("%01.2f", $order->getDiscountAmount()),
                 'VAT' => sprintf(
                     "%01.2f",
                     $order->getDiscountTaxCompensationAmount() / $order->getDiscountAmount() * 100

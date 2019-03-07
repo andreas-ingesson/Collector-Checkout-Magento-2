@@ -190,7 +190,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         } else {
             $storeID = $this->collectorConfig->getB2CStoreIDNotNull($order->getStore());
         }
-        if ($order->getGrandTotal() - $order->getTotalInvoiced() == $amount) {
+        if ($order->getGrandTotal() - $order->getTotalInvoiced() == $amount*$order->getBaseToOrderRate()) {
             $req = array(
                 'CorrelationId' => $payment->getOrder()->getIncrementId(),
                 'CountryCode' => $this->collectorConfig->getCountryCodeNotNull($order->getStore()),
@@ -358,7 +358,7 @@ class Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         $soap = $this->collectorApi->getInvoiceSOAP(['ClientIpAddress' => $payment->getOrder()->getRemoteIp()], $order);
-        if ($order->getGrandTotal() == $amount) {
+        if ($order->getGrandTotal() == $amount*$order->getBaseToOrderRate()) {
             $req = array(
                 'CorrelationId' => $order->getIncrementId(),
                 'CountryCode' => $this->collectorConfig->getCountryCodeNotNull($order->getStore()),
