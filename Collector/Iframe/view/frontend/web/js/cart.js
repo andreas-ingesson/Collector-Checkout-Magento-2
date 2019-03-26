@@ -118,6 +118,9 @@ define([
                 $('.collector-checkout').removeClass('disabled');
             }
             $(document).on('click', '.col-inc', function () {
+                if (disabled){
+                    return;
+                }
                 var param = {
                     is_ajax: true,
                     id: this.id,
@@ -154,6 +157,9 @@ define([
                 });
             });
             $(document).on('click', '.col-sub', function () {
+                if (disabled){
+                    return;
+                }
                 var param = {
                     is_ajax: true,
                     id: this.id,
@@ -190,6 +196,9 @@ define([
                 });
             });
             $(document).on('click', '.newsletter', function () {
+                if (disabled){
+                    return;
+                }
                 var param = {
                     is_ajax: true,
                     value: document.getElementById('newsletter-checkbox').checked,
@@ -214,6 +223,9 @@ define([
                 });
             });
             $(document).on('click', '.col-del', function () {
+                if (disabled){
+                    return;
+                }
                 var param = {
                     is_ajax: true,
                     id: this.id,
@@ -268,6 +280,9 @@ define([
                 });
             });
             $(document).on('click', '.col-radio', function () {
+                if (disabled){
+                    return;
+                }
                 var param = {
                     is_ajax: true,
                     id: this.id,
@@ -317,6 +332,9 @@ define([
                 });
             });
             $(document).on('click', '.col-codeButton', function () {
+                if (disabled){
+                    return;
+                }
                 var param = {
                     is_ajax: true,
                     value: document.getElementById("col-code").value,
@@ -353,6 +371,9 @@ define([
                 });
             });
             $(document).on('click', '#col-businesstypes a', function (e) {
+                if (disabled){
+                    return;
+                }
                 e.preventDefault();
                 var ctype = jQuery(this).attr('id');
                 jQuery.ajax({

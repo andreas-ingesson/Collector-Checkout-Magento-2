@@ -410,6 +410,13 @@ class Config
         if (empty($btype)) {
             $btype = $this->collectorSession->getBtype('');
         }
+        if (empty($btype)) {
+            if ($this->getDefaultCustomerType() == \Collector\Iframe\Model\Config\Source\Customertype::PRIVATE_CUSTOMER){
+                $btype = \Collector\Base\Model\Session::B2C;
+            }
+            else {
+                $btype = \Collector\Base\Model\Session::B2B;
+            }
         if ($btype == \Collector\Base\Model\Session::B2B ||
             empty($btype) && $this->getCustomerType() ==
             \Collector\Iframe\Model\Config\Source\Customertype::BUSINESS_CUSTOMER
@@ -456,6 +463,14 @@ class Config
     {
         return $this->scopeConfig->getValue(
             'checkout/cart/configurable_product_image',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    public function getDefaultCustomerType()
+    {
+        return $this->scopeConfig->getValue(
+            'collector_collectorcheckout/general/default_customer_type',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }

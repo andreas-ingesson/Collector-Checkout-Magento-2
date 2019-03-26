@@ -49,44 +49,40 @@
 					<label>terms and conditions url</label>
 				</field>
 				<field id="customer_type" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>customer type</label>
+					<label>Allowed Customers</label>
 					<source_model>Collector\Iframe\Model\Config\Source\Customertype</source_model>
 				</field>
-				<field id="acceptstatus" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="default_customer_type" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Default Customer Type</label>
+					<source_model>Collector\Iframe\Model\Config\Source\DefaultCustomerType</source_model>
+				</field>
+				<field id="acceptstatus" translate="label" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Accept Status</label>
 					<source_model>Collector\Iframe\Model\Config\Source\AcceptStatus</source_model>
 				</field>
-				<field id="holdstatus" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="holdstatus" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Hold Status</label>
 					<source_model>Collector\Iframe\Model\Config\Source\HoldStatus</source_model>
 				</field>
-				<field id="deniedstatus" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="deniedstatus" translate="label" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Denied Status</label>
 					<source_model>Collector\Iframe\Model\Config\Source\DeniedStatus</source_model>
 				</field>
-				<field id="updatecustomer" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="updatecustomer" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Update Magento Session Customer</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 					<comment>
 						if selected this will update billing and shipping addresses in magento session when they are set in the iframe
 					</comment>
 				</field>
-                <field id="updatedbcustomer" translate="label comment" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="updatedbcustomer" translate="label comment" type="select" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Update Magento Customer</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 					<comment>
 						if selected this will create billing and shipping addresses for a magento customer during order creation
 					</comment>
 				</field>
-
-			<!--	<field id="shippingaddress" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Enable Shipping Address</label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-					<comment>
-
-					</comment>
-				</field>-->
-				<field id="create_account" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+				<field id="create_account" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Create Customer Account if it doesn't exist</label>
 					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
 				</field>

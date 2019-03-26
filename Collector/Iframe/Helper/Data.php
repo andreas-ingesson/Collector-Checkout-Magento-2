@@ -525,6 +525,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             } else if ($cartItem->getParentItem() !== null) {
                 if ($cartItem->getParentItem()->getProductType() == 'bundle') {
                     $qty = $cartItem->getQty() * $cartItem->getParentItem()->getQty();
+                } else if ($cartItem->getParentItem()->getProductType() == 'configurable'){
+                    $qty = $cartItem->getParentItem()->getQty();
                 } else {
                     $qty = $cartItem->getQty();
                 }

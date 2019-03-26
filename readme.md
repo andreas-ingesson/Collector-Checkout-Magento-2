@@ -44,3 +44,6 @@ All of these are in Stores -> Configuration
 ### Changed the checkout flow
 The new checkout flow requires that the callbacks arrive. 
 Meaning if firewalls, .htaccess locks and other things which prevents users from directly accessing the site will cause orders not to be created.
+
+#### Version 2.1
+Added new setting to admin for configuring the default customer type when the customer first lands on the checkout page

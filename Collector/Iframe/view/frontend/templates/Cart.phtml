@@ -15,12 +15,18 @@ $checkoutHelper = $block->getCheckoutHelper();
     <?php else: ?>
     var shouldUpdateCustomer = false;
     <?php endif; ?>
+    var disabled = false;
 </script>
 <div class="collector-cart" id="collector-cart">
     <?php if ($customerType == \Collector\Iframe\Model\Config\Source\Customertype::PRIVATE_BUSINESS_CUSTOMER): ?>
-        <div id="col-businesstypes" style="float:right;">
+        <div id="col-businesstypes" style="float:right; cursor: pointer;">
+            <?php if ($this->getCustomerType() == \Collector\Base\Model\Session::B2C) : ?>
             <a class="col-btype col-active" id="b2c"><?php echo __('Private'); ?></a> | <a
                     class="col-btype col-inactive" id="b2b"><?php echo __('Company'); ?></a>
+            <?php else : ?>
+                <a class="col-btype col-inactive" id="b2c"><?php echo __('Private'); ?></a> | <a
+                        class="col-btype col-active" id="b2b"><?php echo __('Company'); ?></a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
     <h2 class="col-checkout col-title"><?php echo __('Cart') ?></h2>
@@ -84,7 +90,7 @@ $checkoutHelper = $block->getCheckoutHelper();
         <div class="collector-shipping-methods" id="collector-shipping-methods">
             <div class="collector_shipping_methods">
                 <h1><?php echo __('Shipping Methods') ?></h1>
-                <form>
+                <form id="col-shipping-methods">
                     <?php foreach ($this->getShippingMethods() as $method): ?>
                         <?php if ($method['first']): ?>
                             <div class="col-ship_methods">

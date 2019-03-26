@@ -27,4 +27,10 @@ class Card extends \Collector\Iframe\Model\Payment\BasePayment
     protected $_isGateway = true;
     protected $_canCapture = true;
     protected $_canCapturePartial = true;
+
+    public function isActive($storeId = null)
+    {
+        return true;
+    }
+
 }

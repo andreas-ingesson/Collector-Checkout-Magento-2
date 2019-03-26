@@ -39,7 +39,27 @@ define([
     document.addEventListener('collectorCheckoutOrderValidationFailed', function (event) {
     });
     document.addEventListener('collectorCheckoutLocked', function (event) {
+        var incBtns = document.getElementsByClassName('collector-checkout-button-inc col-inc');
+        for (var i = 0; i < incBtns.length; i++){
+            incBtns[i].disabled = true;
+        }
+        var subBtns = document.getElementsByClassName();
+        for (var i = 0; i < subBtns.length; i++){
+            subBtns[i].disabled = true;
+        }
+        document.getElementById('col-codeButton').disabled = true;
+        disabled = true;
     });
     document.addEventListener('collectorCheckoutUnlocked', function (event) {
+        var incBtns = document.getElementsByClassName('collector-checkout-button-inc col-inc');
+        for (var i = 0; i < incBtns.length; i++){
+            incBtns[i].disabled = false;
+        }
+        var subBtns = document.getElementsByClassName();
+        for (var i = 0; i < subBtns.length; i++){
+            subBtns[i].disabled = false;
+        }
+        document.getElementById('col-codeButton').disabled = true;
+        disabled = false;
     });
 });

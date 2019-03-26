@@ -272,4 +272,19 @@ class Cart extends \Magento\Checkout\Block\Onepage
     {
         return $this->checkoutSession->getQuote()->getShippingAddress()->getData();
     }
+
+    public function getCustomerType()
+    {
+        if ($this->collectorSession->getBtype() !== null){
+            return $this->collectorSession->getBtype();
+        }
+        if ($this->collectorConfig->getDefaultCustomerType() == \Collector\Iframe\Model\Config\Source\Customertype::PRIVATE_CUSTOMER){
+            return \Collector\Base\Model\Session::B2C;
+        }
+        else {
+            return \Collector\Base\Model\Session::B2B;
+        }
+    }
+
+
 }
