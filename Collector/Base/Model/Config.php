@@ -411,12 +411,12 @@ class Config
             $btype = $this->collectorSession->getBtype('');
         }
         if (empty($btype)) {
-            if ($this->getDefaultCustomerType() == \Collector\Iframe\Model\Config\Source\Customertype::PRIVATE_CUSTOMER){
+            if ($this->getDefaultCustomerType() == \Collector\Iframe\Model\Config\Source\Customertype::PRIVATE_CUSTOMER) {
                 $btype = \Collector\Base\Model\Session::B2C;
-            }
-            else {
+            } else {
                 $btype = \Collector\Base\Model\Session::B2B;
             }
+        }
         if ($btype == \Collector\Base\Model\Session::B2B ||
             empty($btype) && $this->getCustomerType() ==
             \Collector\Iframe\Model\Config\Source\Customertype::BUSINESS_CUSTOMER
