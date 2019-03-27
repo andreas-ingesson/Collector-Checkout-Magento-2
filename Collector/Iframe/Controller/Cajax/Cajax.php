@@ -290,11 +290,22 @@ class Cajax extends \Magento\Framework\App\Action\Action
                                 else {
                                     $manageStock = $stockItem->getData('manage_stock');
                                 }
-                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() > 0) || !$manageStock) {
+                                if ($stockItem->getData('use_config_backorders') == 1){
+                                    $backorders = $this->collectorConfig->getBackOrders();
+                                }
+                                else {
+                                    $backorders = $stockItem->getData('backorders');
+                                }
+                                if (($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() > 0) || !$manageStock || $backorders != 0) {
                                     $item->setQty($item->getQty() + 1);
                                     $changed = true;
                                     $updateCart = true;
                                     $updateFees = true;
+                                    if ($backorders == 2 && ($this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()) - $item->getQty() < 0)){
+                                        $this->messageManager->addWarning(
+                                            __('We don\'t have as many %1 as you requested, but we\'ll back order the remaining %2.', $item->getName(), $item->getQty() - $this->stockState->getStockQty($product->getId(), $product->getStore()->getWebsiteId()))
+                                        );
+                                    }
                                 } else {
                                     $this->messageManager->addError(
                                         __('We don\'t have as many "%1" as you requested.', $item->getName())

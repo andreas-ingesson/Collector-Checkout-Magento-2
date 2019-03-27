@@ -51,6 +51,14 @@ class Config
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
+
+    public function getBackOrders()
+    {
+        return $this->scopeConfig->getValue(
+            'cataloginventory/item_options/backorders',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
     
     public function getUpdateDbCustomer()
     {
