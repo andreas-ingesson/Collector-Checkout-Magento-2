@@ -604,7 +604,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->cart->getQuote()->collectTotals();
         $shippingAddress = $this->cart->getQuote()->getShippingAddress();
         $shippingTaxClass = $this->scopeConfig->getValue('tax/classes/shipping_tax_class');
-        $shippingTax = $this->taxCalculation->getRate($request->setProductTaxClassId($shippingTaxClass));
+        $request->setProductTaxClassId($shippingTaxClass);
+        $request->setProductClassId($shippingTaxClass);
+        $shippingTax = $this->taxCalculation->getRate($request);
         $ret = [];
         if ($fee > 0) {
             $ret['directinvoicenotification'] = [
