@@ -121,7 +121,7 @@ class Checkout extends \Magento\Checkout\Block\Onepage
         if (empty($this->cart->getQuote()->getReservedOrderId())) {
             $this->cart->getQuote()->reserveOrderId()->save();
         }
-        $result = $this->apiRequest->getTokenRequest([
+        $request = array(
             'storeId' => $this->collectorConfig->getB2BrB2CStore(),
             'countryCode' => $this->collectorConfig->getCountryCode(),
             'reference' => $this->cart->getQuote()->getReservedOrderId(),
@@ -131,10 +131,41 @@ class Checkout extends \Magento\Checkout\Block\Onepage
             'validationUri' => $this->helper->getValidationUrl(),
             "cart" => ['items' => $this->helper->getProducts()],
             "fees" => $this->helper->getFees()
-        ]);
+        );
+        if($this->customerSession->isLoggedIn()) {
+            $telephone = false;
+            $postalCode = false;
+            $email = $this->customerSession->getCustomerData()->getEmail();
+            if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone() !== null){
+                $telephone = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone();
+            }
+            else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone() !== null){
+                $telephone = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone();
+            }
+            if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode() !== null){
+                $postalCode = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode();
+            }
+            else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode() !== null){
+                $postalCode = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode();
+            }
+            if ($email !== false && $postalCode !== false && $telephone !== false) {
+                $request['customer'] = array(
+                    'email' => $email,
+                    'mobilePhoneNumber' => $telephone,
+                    'postalCode' => $postalCode,
+                );
+            }
+        }
+        $result = $this->apiRequest->getTokenRequest($request);
 		if ($result['error'] !== NULL){
 			return array('error'=>true,'message'=>$result['error']['errors'][0]['message']);
 		}
+
+
+
+
+
+
         $this->collectorSession->setCollectorPublicToken($result["data"]["publicToken"]);
         $this->collectorSession->setCollectorPrivateId($result['data']['privateId']);
         $this->cart->getQuote()->setData('collector_private_id', $result['data']['privateId']);

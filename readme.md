@@ -47,3 +47,6 @@ Meaning if firewalls, .htaccess locks and other things which prevents users from
 
 #### Version 2.1
 Added new setting to admin for configuring the default customer type when the customer first lands on the checkout page
+
+#### Version 2.1.3
+Added prefill functionality for logged in customers using default shipping address and/or default billing address
