@@ -485,8 +485,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'img' => $image
             );
             if ($this->scopeConfig->getValue('tax/cart_display/price') == 3){
-                $item['sum'] .= "<br><span style=\"font-size: 10px;\">" . 
-                $this->pricingHelper->currency($cartItem->getRowTotal(), true, false) .
+                $item['sum'] .= "<br><span style=\"font-size: 10px;\">" .
+                $this->checkoutHelper->formatPrice($cartItem->getRowTotal(), true, false) .
                 "&nbsp" .
                 __('Excl. Tax') .
                 "</span>";
