@@ -119,6 +119,10 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Registry
      */
     protected $registry;
+    /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
+    protected $subscriberFactory;
     
     /**
      * Index constructor.
