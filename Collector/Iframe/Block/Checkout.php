@@ -136,17 +136,35 @@ class Checkout extends \Magento\Checkout\Block\Onepage
             $telephone = false;
             $postalCode = false;
             $email = $this->customerSession->getCustomerData()->getEmail();
-            if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone() !== null){
-                $telephone = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone();
+            if ($this->customerSession->getCustomer()->getDefaultShippingAddress() && $this->customerSession->getCustomer()->getDefaultBillingAddress()){
+                if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone() !== null){
+                    $telephone = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone();
+                }
+                else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone() !== null){
+                    $telephone = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone();
+                }
+                if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode() !== null){
+                    $postalCode = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode();
+                }
+                else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode() !== null){
+                    $postalCode = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode();
+                }
             }
-            else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone() !== null){
-                $telephone = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone();
+            else if ($this->customerSession->getCustomer()->getDefaultShippingAddress()){
+                if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone() !== null){
+                    $telephone = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getTelephone();
+                }
+                if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode() !== null){
+                    $postalCode = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode();
+                }
             }
-            if ($this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode() !== null){
-                $postalCode = $this->customerSession->getCustomer()->getDefaultShippingAddress()->getPostcode();
-            }
-            else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode() !== null){
-                $postalCode = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode();
+            else if ($this->customerSession->getCustomer()->getDefaultBillingAddress()){
+                if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone() !== null){
+                    $telephone = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getTelephone();
+                }
+                if ($this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode() !== null){
+                    $postalCode = $this->customerSession->getCustomer()->getDefaultBillingAddress()->getPostcode();
+                }
             }
             if ($email !== false && $postalCode !== false && $telephone !== false) {
                 $request['customer'] = array(
