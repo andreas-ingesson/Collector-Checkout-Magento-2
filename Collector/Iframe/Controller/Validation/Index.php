@@ -72,7 +72,10 @@ class Index extends \Magento\Framework\App\Action\Action
      * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
      */
     protected $orderSender;
-
+    /**
+     * @var \Magento\Newsletter\Model\SubscriberFactory
+     */
+    protected $subscriberFactory;
     /**
      * @var \Collector\Base\Model\ApiRequest
      */
@@ -129,6 +132,7 @@ class Index extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\Sales\Model\Order $order
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Quote\Api\CartRepositoryInterface $_cartRepositoryInterface
      * @param \Magento\Quote\Api\CartManagementInterface $_cartManagementInterface
      * @param \Magento\Store\Model\StoreManagerInterface $_storeManager
@@ -159,6 +163,7 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Sales\Model\Order $order,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
+        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Quote\Api\CartRepositoryInterface $_cartRepositoryInterface,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Magento\Quote\Api\CartManagementInterface $_cartManagementInterface,
@@ -193,6 +198,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->collectorSession = $_collectorSession;
         $this->order = $order;
         $this->orderSender = $orderSender;
+        $this->subscriberFactory = $subscriberFactory;
         $this->quoteManagement = $quoteManagement;
         $this->resultPageFactory = $resultPageFactory;
         $this->helper = $_helper;
